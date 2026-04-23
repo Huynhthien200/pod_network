@@ -73,6 +73,14 @@
             background: rgba(245, 158, 11, 0.1);
             border-left: 3px solid #f59e0b;
         }
+
+        #status-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: none;
+        }
     </style>
 </head>
 <body class="selection:bg-emerald-500/30">
@@ -85,14 +93,20 @@
             </div>
             <div>
                 <h3 id="pin-title" class="text-white font-black text-lg uppercase tracking-widest italic">Xác nhận PIN</h3>
-                <p class="text-[10px] text-slate-500 mt-2 italic">PIN dùng để mã hóa khóa riêng tư lưu cục bộ của bạn.</p>
+                <p class="text-[10px] text-slate-500 mt-2 italic">Dùng PIN để giải mã ví lưu trữ cục bộ của bạn.</p>
             </div>
             <input type="password" id="pin-input" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-center text-xl tracking-[0.5em] text-emerald-400 outline-none focus:border-emerald-500" placeholder="••••">
-            <button id="btn-confirm-pin" class="w-full btn-primary py-4 rounded-2xl font-black text-slate-950 uppercase tracking-widest active:scale-95">XÁC NHẬN</button>
+            <button id="btn-confirm-pin" class="w-full btn-primary py-4 rounded-2xl font-black text-slate-950 uppercase tracking-widest">XÁC NHẬN</button>
         </div>
     </div>
 
-    <!-- Background Decoration -->
+    <!-- Toast Notification -->
+    <div id="status-msg" class="glass-panel px-6 py-4 rounded-2xl border-emerald-500/30 flex items-center gap-3 animate-in slide-in-from-bottom-4">
+        <span id="status-icon" class="text-emerald-400"></span>
+        <p id="status-text" class="text-xs font-black uppercase tracking-widest"></p>
+    </div>
+
+    <!-- Background -->
     <div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
         <div class="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] rounded-full bg-emerald-500/5 blur-[100px]"></div>
         <div class="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-emerald-600/5 blur-[100px]"></div>
@@ -102,9 +116,9 @@
     <div class="sticky top-0 z-[100] bg-[#010a05]/98 backdrop-blur-md border-b border-white/5 py-1.5 px-6 overflow-hidden">
         <div class="flex items-center gap-12 whitespace-nowrap italic font-bold tracking-widest text-[9px] text-emerald-400/70 uppercase">
             <span id="rpc-status-badge">RPC Status: Checking...</span>
-            <span>Identity: Deterministic Vault Activated</span>
+            <span>Identity: Deterministic Vault Sync</span>
             <span>Network: Pod v2 (Chain 1293)</span>
-            <span>Storage: Walrus Decentralized Blobs</span>
+            <span>Storage: Walrus Decentralized Center</span>
         </div>
     </div>
 
@@ -150,25 +164,24 @@
                         </div>
                     </div>
 
-                    <!-- Deterministic Wallet Warning -->
                     <div id="discord-warning" class="hidden warning-box p-3 rounded-xl space-y-2">
                         <div class="flex items-center gap-2 text-amber-500">
                             <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-                            <span class="text-[9px] font-black uppercase">Cảnh báo ví Discord</span>
+                            <span class="text-[9px] font-black uppercase">Ví Discord Cố Định</span>
                         </div>
-                        <p class="text-[8px] text-slate-400 italic leading-tight">Đây là ví gắn liền với ID Discord. Mất mã PIN hoặc tài khoản Discord sẽ mất ví vĩnh viễn. Không có Seed Phrase để phục hồi.</p>
+                        <p class="text-[8px] text-slate-400 italic leading-tight">Hãy lưu mã PIN cẩn thận. Mất PIN đồng nghĩa với việc mất ví vĩnh viễn.</p>
                     </div>
 
                     <div class="space-y-3">
                         <div class="bg-black/40 p-4 rounded-2xl border border-white/5 group">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-[8px] font-black text-slate-600 uppercase">Địa chỉ nạp (pETH)</span>
+                                <span class="text-[8px] font-black text-slate-600 uppercase">Ví nạp tiền (pETH)</span>
                                 <button onclick="window.copyAddress()" class="text-[8px] text-emerald-500 font-black hover:text-white transition-colors">COPY</button>
                             </div>
                             <p id="account-address" class="text-[10px] font-mono text-emerald-400/80 truncate italic">0x...</p>
                         </div>
                         <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
-                            <span class="text-[8px] font-black text-slate-600 uppercase">Số dư Ledger</span>
+                            <span class="text-[8px] font-black text-slate-600 uppercase">Số dư ví Pod</span>
                             <span id="account-balance" class="text-white font-black text-xs">0.0000 pETH</span>
                         </div>
                     </div>
@@ -183,7 +196,7 @@
                     <div class="flex gap-4">
                         <div class="w-12 h-12 bg-emerald-500/10 rounded-full flex-shrink-0 flex items-center justify-center text-emerald-400"><i data-lucide="pen-tool"></i></div>
                         <div class="flex-grow space-y-4">
-                            <div id="editor" contenteditable="true" class="w-full bg-transparent text-white text-lg leading-relaxed focus:outline-none min-h-[80px]" data-placeholder="Bạn muốn mỏ neo điều gì hôm nay?"></div>
+                            <div id="editor" contenteditable="true" class="w-full bg-transparent text-white text-lg leading-relaxed focus:outline-none min-h-[80px]" data-placeholder="Hôm nay bạn muốn mỏ neo điều gì?"></div>
                             <div id="media-preview" class="hidden grid grid-cols-1 gap-4 bg-black/40 p-4 rounded-3xl border border-white/5"></div>
                             <div class="flex items-center justify-between pt-4 border-t border-white/5">
                                 <div class="flex gap-2">
@@ -216,10 +229,6 @@
                             <span class="text-[9px] text-slate-600 font-black uppercase">RPC Sync</span>
                             <span id="rpc-badge" class="text-red-500 font-black text-[9px]">OFFLINE</span>
                         </div>
-                        <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
-                            <span class="text-[9px] text-slate-600 font-black uppercase">Contract</span>
-                            <span class="text-emerald-400 font-black text-[8px] italic truncate ml-4">...9bd2afa</span>
-                        </div>
                     </div>
                 </div>
                 <input type="hidden" id="indexer-address" value="0xd7094f9db021c676075d2bfc4188c57bc9bd2afa">
@@ -233,11 +242,23 @@
         const POD_NETWORK_RPC = 'https://rpc.v2.pod.network';
         const WALRUS_PUBLISHER = 'https://publisher.walrus-testnet.walrus.space';
         const WALRUS_AGGREGATOR = 'https://aggregator.walrus-testnet.walrus.space';
-        const SALT = "pod_v6_deterministic_identity_salt_secure";
+        const SALT = "pod_v6_deterministic_identity_salt_secure_prod";
 
         let account = null, isSocialLogin = false, currentWallet = null, allPosts = [], uploadedBlobs = [], currentView = 'global', balanceTimer = null;
 
-        // --- SECURITY: SANITIZER ---
+        // --- UI UTILS ---
+        function showStatus(text, type = 'info') {
+            const el = document.getElementById('status-msg');
+            const icon = document.getElementById('status-icon');
+            const txt = document.getElementById('status-text');
+            el.style.display = 'flex';
+            txt.innerText = text;
+            icon.innerHTML = type === 'error' ? '<i data-lucide="alert-circle"></i>' : '<i data-lucide="check-circle"></i>';
+            lucide.createIcons();
+            setTimeout(() => { el.style.display = 'none'; }, 6000);
+        }
+
+        // --- SECURITY ---
         function sanitizeHTML(h) {
             const d = document.createElement('div'); d.innerHTML = h;
             const tags = ['b','i','em','strong','p','h1','h2','h3','img','video','br','span','blockquote'];
@@ -250,7 +271,7 @@
             return d.innerHTML;
         }
 
-        // --- CRYPTO: DETERMINISTIC VAULT ---
+        // --- CRYPTO VAULT ---
         async function deriveKey(p) {
             const e = new TextEncoder();
             const km = await crypto.subtle.importKey("raw", e.encode(p), { name: "PBKDF2" }, false, ["deriveKey"]);
@@ -268,7 +289,7 @@
             } catch (e) { return null; }
         }
 
-        // --- DISCORD OAUTH2 ---
+        // --- AUTH FLOW ---
         window.loginDiscord = () => {
             const redirect = encodeURIComponent(window.location.origin + window.location.pathname);
             window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirect}&response_type=token&scope=identify`;
@@ -284,21 +305,21 @@
                 const user = await res.json();
                 if (!user.id) return;
                 
-                // FIX: Tạo ví từ seed deterministic thông qua ethers
                 const seed = ethers.id(user.id + SALT);
                 const tempWallet = new ethers.Wallet(seed);
                 const pkEntropy = tempWallet.privateKey;
 
-                const vault = localStorage.getItem('pod_vault_secure');
+                const vault = localStorage.getItem('pod_vault_secure_v2');
                 if (vault) {
                     openPinModal(`Mở khóa cho ${user.username}`, async (pin) => {
                         const dpk = await decryptK(JSON.parse(vault), pin);
-                        if (dpk === pkEntropy) { initIdentity(pkEntropy, user.username, true, user); closePinModal(); } else alert("Sai PIN!");
+                        if (dpk === pkEntropy) { initIdentity(pkEntropy, user.username, true, user); closePinModal(); } 
+                        else showStatus("Sai mã PIN!", "error");
                     });
                 } else {
                     openPinModal("Tạo PIN để bảo mật ví mới", async (pin) => {
-                        if (pin.length < 4) return alert("PIN tối thiểu 4 số");
-                        localStorage.setItem('pod_vault_secure', JSON.stringify(await encryptK(pkEntropy, pin)));
+                        if (pin.length < 4) return showStatus("PIN tối thiểu 4 số", "error");
+                        localStorage.setItem('pod_vault_secure_v2', JSON.stringify(await encryptK(pkEntropy, pin)));
                         initIdentity(pkEntropy, user.username, true, user); closePinModal();
                     });
                 }
@@ -306,7 +327,7 @@
         }
 
         window.connectWallet = async () => {
-            if (!window.ethereum) return alert("Cài MetaMask!");
+            if (!window.ethereum) return showStatus("Vui lòng cài MetaMask!", "error");
             try {
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
@@ -353,14 +374,12 @@
                 const b = await provider.getBalance(account);
                 document.getElementById('account-balance').innerText = `${parseFloat(ethers.formatEther(b)).toFixed(4)} pETH`;
                 
-                // FIX: Update UI status badges
                 document.getElementById('rpc-badge').innerText = "ONLINE";
                 document.getElementById('rpc-badge').className = "text-emerald-400 font-black text-[9px]";
                 document.getElementById('rpc-status-badge').innerText = "RPC Status: ONLINE";
                 document.getElementById('rpc-status-badge').className = "text-emerald-400";
             } catch (e) {
                 document.getElementById('rpc-badge').innerText = "ERROR";
-                document.getElementById('rpc-badge').className = "text-red-500 font-black text-[9px]";
                 document.getElementById('rpc-status-badge').innerText = "RPC Status: ERROR";
                 document.getElementById('rpc-status-badge').className = "text-red-500";
             }
@@ -421,25 +440,51 @@
             lucide.createIcons();
         }
 
-        // --- POSTING & MEDIA ---
+        // --- ĐĂNG BÀI (SỬA LỖI HANDLE ERROR) ---
         window.handleOnchainPost = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-broadcast'), content = document.getElementById('editor').innerHTML;
-            if(!content.trim() || content==="<br>") return;
+            if(!content.trim() || content==="<br>") return showStatus("Bạn chưa nhập nội dung!", "error");
+            
             try {
                 btn.disabled = true; btn.innerHTML = '<div class="loading-ring mx-auto"></div>';
+                
+                // 1. Tải Metadata lên Walrus
+                showStatus("Đang tải dữ liệu lên Walrus...");
                 const m = { content, blobs: uploadedBlobs, ts: Date.now(), date: new Date().toLocaleDateString('vi-VN') };
                 const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) });
-                if(!r.ok) throw new Error("Walrus Error");
+                
+                if(!r.ok) throw new Error("Lỗi máy chủ lưu trữ Walrus. Vui lòng thử lại sau.");
+                
                 const d = await r.json();
                 const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
                 
-                const tx = await new ethers.Contract(document.getElementById('indexer-address').value, ["function createPost(string blobId, uint256 week) public"], currentWallet).createPost(bId, 0);
+                // 2. Mỏ neo sự kiện lên Pod Network
+                showStatus("Đang mỏ neo sự kiện vào Blockchain...");
+                const indexerAddr = document.getElementById('indexer-address').value;
+                const contract = new ethers.Contract(indexerAddr, ["function createPost(string blobId, uint256 week) public"], currentWallet);
+                
+                // Thêm gasLimit thủ công để tránh lỗi ước tính gas sai
+                const tx = await contract.createPost(bId, 0, { gasLimit: 400000 });
+                showStatus("Đang chờ xác nhận giao dịch...");
                 await tx.wait();
                 
-                document.getElementById('editor').innerHTML = ''; uploadedBlobs = []; document.getElementById('media-preview').innerHTML = ''; window.syncRealOnchainDiscovery();
-            } catch (err) { alert("Giao dịch lỗi: Hãy kiểm tra số dư pETH của bạn!"); } 
-            finally { btn.disabled = false; btn.innerHTML = 'ĐĂNG BÀI THẬT'; lucide.createIcons(); }
+                showStatus("Đã phát sóng bài viết thành công!", "success");
+                document.getElementById('editor').innerHTML = ''; uploadedBlobs = []; document.getElementById('media-preview').innerHTML = ''; 
+                window.syncRealOnchainDiscovery();
+                refreshBal();
+            } catch (err) { 
+                console.error(err);
+                let msg = "Lỗi không xác định.";
+                if (err.message.includes("insufficient funds")) msg = "Ví không đủ pETH để trả phí gas!";
+                else if (err.message.includes("user rejected")) msg = "Giao dịch bị từ chối bởi người dùng.";
+                else if (err.message.includes("Walrus")) msg = err.message;
+                else msg = "Lỗi Giao Dịch: " + (err.reason || err.shortMessage || "Kiểm tra kết nối mạng.");
+                
+                alert(msg); // Vẫn giữ alert để thông báo quan trọng nhất
+            } finally { 
+                btn.disabled = false; btn.innerHTML = 'ĐĂNG BÀI THẬT'; lucide.createIcons(); 
+            }
         };
 
         window.handleMediaUpload = async (i) => {
@@ -450,13 +495,11 @@
                 const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', body: f });
                 if(!r.ok) throw new Error();
                 const d = await r.json();
-                // FIX: Sử dụng đúng biến bId từ d
                 const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
                 uploadedBlobs.push({ blobId: bId, type: f.type.startsWith('image/') ? 'image' : 'video' });
-                
                 p.innerHTML = `<div class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl relative">${f.type.startsWith('image/')?`<img src="${URL.createObjectURL(f)}" class="w-full h-full object-cover">`:`<video src="${URL.createObjectURL(f)}" class="w-full h-full object-cover" muted loop autoplay></video>`}<div class="absolute bottom-4 right-4 bg-emerald-500 p-2 rounded-2xl text-black"><i data-lucide="check" class="w-4 h-4"></i></div></div>`;
                 lucide.createIcons();
-            } catch (e) { p.innerHTML = ''; }
+            } catch (e) { p.innerHTML = ''; showStatus("Lỗi khi tải media lên Walrus", "error"); }
         };
 
         window.switchView = (v) => { 
@@ -465,9 +508,9 @@
             document.getElementById('nav-personal').className = `w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group ${v === 'personal' ? 'text-emerald-400' : 'text-slate-500'}`;
             renderPosts(); 
         };
-        window.copyAddress = () => navigator.clipboard.writeText(account).then(() => alert('Đã copy ví!'));
-        window.copyToClip = (t) => navigator.clipboard.writeText(t).then(() => alert('Đã copy địa chỉ!'));
-        window.logout = () => { localStorage.removeItem('pod_vault_secure'); location.reload(); };
+        window.copyAddress = () => navigator.clipboard.writeText(account).then(() => showStatus('Đã copy địa chỉ ví!', 'success'));
+        window.copyToClip = (t) => navigator.clipboard.writeText(t).then(() => showStatus('Đã copy địa chỉ!', 'success'));
+        window.logout = () => { localStorage.removeItem('pod_vault_secure_v2'); location.reload(); };
         window.openPinModal = (t, cb) => { document.getElementById('pin-title').innerText = t; document.getElementById('pin-modal').classList.remove('hidden'); document.getElementById('btn-confirm-pin').onclick = () => cb(document.getElementById('pin-input').value); };
         window.closePinModal = () => document.getElementById('pin-modal').classList.add('hidden');
         window.formatDoc = (c, v=null) => { document.execCommand(c, false, v); document.getElementById('editor').focus(); };

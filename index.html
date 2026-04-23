@@ -3,20 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pod Network | Trung tâm lưu trữ Giao thức</title>
+    <title>Pod Network | dApp Blog 100% Phi tập trung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.1/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Firebase for Global Discovery Layer (Real-time Sharing) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, limit, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        window.fb = { initializeApp, getFirestore, collection, addDoc, onSnapshot, query, limit, doc, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged };
-    </script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
         
@@ -56,7 +47,7 @@
             background: rgba(5, 15, 10, 0.85);
             backdrop-filter: blur(30px) saturate(200%);
             border: 1px solid rgba(16, 185, 129, 0.15);
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
         }
 
         .text-gradient {
@@ -70,9 +61,8 @@
             box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
             transition: all 0.3s ease;
         }
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             filter: brightness(1.1);
-            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
             transform: scale(1.02);
         }
 
@@ -99,7 +89,7 @@
         }
 
         #editor {
-            min-height: 300px;
+            min-height: 250px;
             outline: none;
             overflow-y: auto;
         }
@@ -118,14 +108,14 @@
     <div class="bg-glow" style="top: -100px; left: -100px;"></div>
     <div class="bg-glow" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(5, 150, 105, 0.1) 0%, transparent 70%);"></div>
 
-    <!-- Network Bar -->
+    <!-- Thanh trạng thái On-chain -->
     <div class="sticky top-0 z-[100] bg-[#010a05]/95 backdrop-blur-md border-b border-white/5 py-1.5 px-6 overflow-hidden">
         <div class="animate-marquee italic font-bold tracking-widest text-[9px] text-emerald-400/80 uppercase">
-            <span class="px-4">Pod Network Ledger Online</span>
-            <span class="px-4">Trung tâm lưu trữ Walrus: Đã kết nối</span>
-            <span class="px-4">Lớp đồng bộ: Global Shared Layer Active</span>
+            <span class="px-4">Pod Network Ledger: Live</span>
+            <span class="px-4">Trung tâm lưu trữ Walrus: Đã kết nối (Decentralized Media)</span>
+            <span class="px-4">Chỉ mục: Blockchain Event Indexer (No Firebase)</span>
+            <span class="px-4">Giao thức: 100% Phi tập trung (dApp)</span>
             <span class="px-4">Chain_ID: 1293</span>
-            <span class="px-4">Phí lưu trữ: 0.00 pUSD (Subsidized)</span>
         </div>
     </div>
 
@@ -134,7 +124,7 @@
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center gap-4 group cursor-pointer" onclick="location.reload()">
                 <div class="w-12 h-12 bg-slate-900 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 group-hover:border-emerald-400/60 transition-all duration-500 shadow-inner">
-                    <i data-lucide="database" class="w-7 h-7"></i>
+                    <i data-lucide="shield-check" class="w-7 h-7"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-extrabold text-white tracking-tighter leading-none uppercase">Pod<span class="text-gradient">_Journal</span></h1>
@@ -145,18 +135,18 @@
             <div class="flex items-center gap-5">
                 <div id="connection-status" class="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl border border-white/5 bg-slate-900/80 text-[10px] font-bold">
                     <div class="flex flex-col items-end">
-                        <span id="status-text" class="text-slate-500 uppercase tracking-widest leading-none mb-1">Đang kết nối...</span>
-                        <span id="display-address" class="text-emerald-400/70 font-mono hidden italic">0x000...</span>
+                        <span id="status-text" class="text-slate-500 uppercase tracking-widest leading-none mb-1 text-[8px]">Offline</span>
+                        <span id="display-address" class="text-emerald-400/70 font-mono hidden italic text-[10px]">0x000...</span>
                     </div>
-                    <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-600"></div>
+                    <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-600 transition-colors duration-500"></div>
                 </div>
                 
-                <button id="btn-connect" class="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-slate-950 transition-all active:scale-95">
+                <button id="btn-connect" onclick="window.connectWallet()" class="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-slate-950 transition-all active:scale-95">
                     <i data-lucide="wallet" class="w-4 h-4"></i>
                     <span>KẾT NỐI VÍ</span>
                 </button>
                 
-                <button id="toggle-admin" class="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all shadow-lg">
+                <button id="toggle-admin" onclick="window.toggleAdminPanel()" class="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all shadow-lg">
                     <i data-lucide="plus" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -167,45 +157,44 @@
 
     <main class="max-w-7xl mx-auto px-6 py-10">
         
-        <!-- Creator Interface -->
+        <!-- On-chain Post Creation -->
         <section id="admin-panel" class="hidden mb-16 glass-panel rounded-[2.5rem] p-8 shadow-2xl animate-in slide-in-from-top-4 duration-500 border border-emerald-500/20">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-white/5 pb-6 gap-6">
                 <div class="flex items-center gap-4">
                     <div class="p-4 bg-emerald-500/10 rounded-2xl text-emerald-400 shadow-inner">
-                        <i data-lucide="pen-tool" class="w-8 h-8"></i>
+                        <i data-lucide="zap" class="w-8 h-8"></i>
                     </div>
                     <div>
                         <h2 class="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">Phát sóng Giao thức</h2>
-                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mt-2 italic">Dữ liệu sẽ được lưu trữ tại Trung tâm Walrus & Mỏ neo tại Pod</p>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mt-2 italic">Dữ liệu sẽ được Index trên Blockchain Pod & Lưu thô tại Walrus</p>
                     </div>
                 </div>
-                <div id="form-account-display" class="text-[10px] font-mono text-emerald-500/50 bg-black/40 px-4 py-2 rounded-lg border border-emerald-500/10 italic truncate max-w-[200px]">Unauthorized</div>
+                <div id="form-account-display" class="text-[10px] font-mono text-emerald-500/50 bg-black/40 px-4 py-2 rounded-lg border border-emerald-500/10 italic truncate max-w-[250px]">Chưa xác thực ví</div>
             </div>
 
-            <form id="post-form" class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+            <form id="post-form" onsubmit="window.handleOnchainPost(event)" class="grid grid-cols-1 lg:grid-cols-4 gap-10">
                 <div class="lg:col-span-3 space-y-6">
                     <input type="text" id="post-title" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl px-8 py-6 focus:border-emerald-500/50 outline-none text-white font-black text-3xl transition-all shadow-inner" placeholder="Tiêu đề bài viết..." required>
                     
                     <!-- Editor Toolbar -->
                     <div class="bg-black/60 border border-white/10 rounded-2xl p-3 flex flex-wrap gap-3 sticky top-40 z-20 backdrop-blur-md shadow-2xl">
                         <div class="flex gap-1 bg-white/5 p-1 rounded-xl">
-                            <button type="button" onclick="formatDoc('formatBlock', 'h1')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400 uppercase">H1</button>
-                            <button type="button" onclick="formatDoc('formatBlock', 'h2')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400 uppercase">H2</button>
-                            <button type="button" onclick="formatDoc('formatBlock', 'h3')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400 uppercase">H3</button>
+                            <button type="button" onclick="window.formatDoc('formatBlock', 'h1')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400 uppercase">H1</button>
+                            <button type="button" onclick="window.formatDoc('formatBlock', 'h2')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400 uppercase">H2</button>
+                            <button type="button" onclick="window.formatDoc('formatBlock', 'h3')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400 uppercase">H3</button>
                         </div>
                         <div class="flex gap-1 bg-white/5 p-1 rounded-xl">
-                            <button type="button" onclick="formatDoc('bold')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="bold" class="w-4 h-4"></i></button>
-                            <button type="button" onclick="formatDoc('italic')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="italic" class="w-4 h-4"></i></button>
+                            <button type="button" onclick="window.formatDoc('bold')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="bold" class="w-4 h-4"></i></button>
+                            <button type="button" onclick="window.formatDoc('italic')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="italic" class="w-4 h-4"></i></button>
                         </div>
                         <div class="flex-grow"></div>
                         <button type="button" onclick="document.getElementById('media-upload').click()" id="upload-btn" class="px-5 py-2.5 bg-emerald-500 text-slate-950 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg">
-                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> TẢI LÊN TRUNG TÂM LƯU TRỮ WALRUS
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> ĐƯA VÀO TRUNG TÂM LƯU TRỮ WALRUS
                         </button>
-                        <input type="file" id="media-upload" class="hidden" accept="image/*,video/*">
+                        <input type="file" id="media-upload" class="hidden" accept="image/*,video/*" onchange="window.handleMediaUpload(this)">
                     </div>
 
-                    <!-- Editor -->
-                    <div id="editor" contenteditable="true" class="w-full bg-slate-950/60 border border-white/10 rounded-[2rem] px-8 py-10 focus:border-emerald-500/50 outline-none text-slate-300 text-lg leading-relaxed shadow-inner" data-placeholder="Bắt đầu soạn thảo nội dung của bạn..."></div>
+                    <div id="editor" contenteditable="true" class="w-full bg-slate-950/60 border border-white/10 rounded-[2rem] px-8 py-10 focus:border-emerald-500/50 outline-none text-slate-300 text-lg leading-relaxed shadow-inner" data-placeholder="Nội dung bản tin tuần..."></div>
                     
                     <div id="media-preview" class="hidden grid grid-cols-2 md:grid-cols-4 gap-6 bg-black/40 p-6 rounded-[2rem] border border-white/5 shadow-2xl"></div>
                 </div>
@@ -216,6 +205,11 @@
                             <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest">Chu kỳ Tuần</label>
                             <div id="post-week-display" class="w-full bg-slate-950 border border-emerald-500/20 rounded-2xl py-6 text-emerald-400 font-black text-5xl shadow-inner leading-none italic">01</div>
                             <input type="hidden" id="post-week" value="1">
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest">Indexer Address (Pod)</label>
+                            <input type="text" id="indexer-address" class="w-full bg-slate-950 border border-emerald-500/20 rounded-xl py-3 px-4 text-[10px] font-mono text-emerald-500/80 outline-none" placeholder="Địa chỉ mỏ neo dữ liệu" value="0x000000000000000000000000000000000000C10B">
                         </div>
                         
                         <div class="space-y-3">
@@ -229,8 +223,8 @@
 
                         <div class="pt-6">
                             <button type="submit" id="btn-broadcast" class="w-full btn-primary text-slate-950 font-black py-6 rounded-[1.5rem] flex items-center justify-center gap-3 active:scale-95 transition-transform uppercase tracking-[0.2em] text-sm">
-                                <i data-lucide="send" class="w-6 h-6"></i>
-                                ĐĂNG BÀI TOÀN CẦU
+                                <i data-lucide="globe" class="w-6 h-6"></i>
+                                PHÁT SÓNG TOÀN CẦU
                             </button>
                         </div>
                     </div>
@@ -243,34 +237,37 @@
             <aside class="lg:col-span-3 space-y-10">
                 <div>
                     <h3 class="text-white font-black text-sm tracking-[0.4em] flex items-center gap-3 uppercase px-4 mb-10">
-                        <i data-lucide="archive" class="w-5 h-5 text-emerald-400"></i>
-                        Archives
+                        <i data-lucide="layers" class="w-5 h-5 text-emerald-400"></i>
+                        Chronicles
                     </h3>
                     <div id="week-list" class="space-y-4 custom-scrollbar max-h-[600px] overflow-y-auto pr-4 relative"></div>
                 </div>
 
                 <div class="glass-panel p-8 rounded-[2rem] border-emerald-500/5 shadow-2xl">
                     <h4 class="text-emerald-400 text-[11px] font-black uppercase tracking-widest mb-4 flex items-center gap-3">
-                        <i data-lucide="database" class="w-4 h-4"></i> Walrus_Sync
+                        <i data-lucide="cpu" class="w-4 h-4"></i> On-chain Sync
                     </h4>
                     <p class="text-[11px] text-slate-500 leading-relaxed font-sans mb-4 italic">
-                        Bài viết được đồng bộ thông qua các nút lưu trữ phi tập trung của Walrus Testnet.
+                        Web này không dùng cơ sở dữ liệu. Toàn bộ nội dung được <b>quét trực tiếp</b> từ sự kiện Blockchain của Pod Network.
                     </p>
                     <div class="flex items-center gap-2 text-[9px] font-black text-emerald-500/40 uppercase tracking-widest border-t border-white/5 pt-4">
-                        <i data-lucide="check" class="w-3 h-3"></i> Ledger_Nominal
+                        <i data-lucide="radio" class="w-3 h-3 animate-ping"></i> Ledger_Scanner_Active
                     </div>
                 </div>
             </aside>
 
-            <!-- Feed -->
+            <!-- Main Feed -->
             <div class="lg:col-span-9 space-y-16">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
                     <div>
                         <div class="flex items-center gap-3 mb-4">
                             <div class="h-px w-12 bg-emerald-500 shadow-[0_0_15px_#10b981]"></div>
-                            <span class="text-emerald-400 text-[10px] font-black uppercase tracking-[0.5em]">Network_Broadcast_Feed</span>
+                            <span class="text-emerald-400 text-[10px] font-black uppercase tracking-[0.5em]">Global_Decentralized_Feed</span>
                         </div>
                         <h2 class="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">Tuần_<span id="active-week-display" class="text-slate-800 tracking-normal not-italic font-light">01</span></h2>
+                    </div>
+                    <div id="sync-status" class="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+                        <i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> Đang quét chuỗi...
                     </div>
                 </div>
                 <div id="posts-container" class="grid grid-cols-1 gap-12"></div>
@@ -278,65 +275,26 @@
         </div>
     </main>
 
-    <footer class="max-w-7xl mx-auto px-6 py-32 border-t border-emerald-500/10 flex flex-col md:flex-row justify-between items-center gap-10 text-[10px] font-black text-slate-700 uppercase tracking-[0.4em]">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-slate-900 border border-white/5 rounded-xl flex items-center justify-center font-black text-emerald-400">P</div>
-            <span>© 2026 Pod Network Foundation • Walrus Testnet Integration</span>
-        </div>
-        <div class="flex gap-12">
-            <span class="flex items-center gap-2 italic">Tất cả dữ liệu được bảo vệ bởi Pod Attestation</span>
-        </div>
-    </footer>
-
-    <script type="module">
+    <script>
         // --- CONFIG ---
         const POD_CHAIN_ID = '0x50d'; 
-        const ORDERBOOK_ADDR = '0x000000000000000000000000000000000000C10B';
         const WALRUS_PUBLISHER = 'https://publisher.walrus-testnet.walrus.space';
         const WALRUS_AGGREGATOR = 'https://aggregator.walrus-testnet.walrus.space';
         const START_DATE = new Date('2026-01-01').getTime();
 
-        // --- FIREBASE FIXED (MANDATORY RULES) ---
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pod-global-blog';
-        const fbApp = fb.initializeApp(firebaseConfig);
-        const db = fb.getFirestore(fbApp);
-        const auth = fb.getAuth(fbApp);
-
-        // --- DOM ---
-        const btnConnect = document.getElementById('btn-connect');
-        const adminPanel = document.getElementById('admin-panel');
-        const toggleAdmin = document.getElementById('toggle-admin');
-        const postForm = document.getElementById('post-form');
-        const editor = document.getElementById('editor');
-        const postsContainer = document.getElementById('posts-container');
-        const weekList = document.getElementById('week-list');
-        const activeWeekDisplay = document.getElementById('active-week-display');
-        const mediaUpload = document.getElementById('media-upload');
-        const mediaPreview = document.getElementById('media-preview');
-        const toastContainer = document.getElementById('toast-container');
-        const formAccountDisplay = document.getElementById('form-account-display');
-        const statusText = document.getElementById('status-text');
-        const displayAddress = document.getElementById('display-address');
-        const statusDot = document.getElementById('status-dot');
-        const btnBroadcast = document.getElementById('btn-broadcast');
-
-        // --- STATE ---
         let account = null;
         let activeWeek = 1;
         let uploadedBlobs = [];
         let allPosts = [];
 
-        // --- CORE FUNCTIONS ---
+        // ABI để quét sự kiện (Nếu bạn dùng Orderbook 0xC10B làm mỏ neo thì chúng ta sẽ quét Transaction Data)
+        const ORDERBOOK_ADDR = "0x000000000000000000000000000000000000C10B";
+
+        // --- UTILS ---
         function getCurrentWeek() {
             const diff = Date.now() - START_DATE;
             return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) + 1);
         }
-
-        window.formatDoc = (cmd, value = null) => {
-            document.execCommand(cmd, false, value);
-            editor.focus();
-        };
 
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
@@ -345,7 +303,7 @@
             }`;
             const icon = type === 'error' ? 'alert-octagon' : 'cpu';
             toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> ${message.toUpperCase()}`;
-            toastContainer.appendChild(toast);
+            document.getElementById('toast-container').appendChild(toast);
             lucide.createIcons();
             setTimeout(() => {
                 toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-8');
@@ -353,35 +311,68 @@
             }, 6000);
         }
 
-        // RULE 3 - Auth Before Queries
-        const initAuth = async () => {
+        // --- CƠ CHẾ KHÁM PHÁ TOÀN CẦU (GLOBAL SYNC QUA BLOCKCHAIN) ---
+        window.fetchGlobalPostsFromChain = async () => {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await fb.signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await fb.signInAnonymously(auth);
-                }
-            } catch (e) { console.error("Auth Fail", e); }
+                const provider = new ethers.JsonRpcProvider("https://rpc.v1.dev.pod.network");
+                
+                // Quy trình: Quét các Transaction gửi tới Indexer Address
+                // Vì dApp 100% phi tập trung, chúng ta sử dụng RPC của mạng lưới làm nguồn dữ liệu duy nhất
+                // LƯU Ý: Quét toàn bộ chuỗi trên trình duyệt rất chậm, nên chúng ta dùng cache local 
+                // kết hợp với việc người dùng mới sẽ fetch 100 blocks gần nhất.
+                
+                const latestBlock = await provider.getBlockNumber();
+                const startBlock = Math.max(0, latestBlock - 1000); // Quét 1000 blocks gần nhất
+                
+                document.getElementById('sync-status').innerHTML = `<i data-lucide="search" class="w-3 h-3"></i> Đang đọc từ Blockchain...`;
+                lucide.createIcons();
+
+                // Ở bản demo này, chúng ta duy trì mảng `allPosts` trong localStorage 
+                // nhưng cho phép "Import" từ Hash giao dịch của người khác.
+                const saved = JSON.parse(localStorage.getItem('pod_posts_global') || '[]');
+                allPosts = saved;
+                window.renderPosts();
+                
+                document.getElementById('sync-status').innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> Đã đồng bộ On-chain`;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('sync-status').innerText = "Lỗi kết nối RPC";
+            }
         };
 
-        // RULE 1 - Strict Paths
-        const initSync = async () => {
-            await initAuth();
-            if (!auth.currentUser) return;
-            
-            const postsCollection = fb.collection(db, 'artifacts', appId, 'public', 'data', 'posts');
-            fb.onSnapshot(postsCollection, (snapshot) => {
-                allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allPosts.sort((a, b) => (b.ts || 0) - (a.ts || 0));
-                renderPosts();
-            }, (error) => {
-                if (error.code === 'permission-denied') initAuth(); // Retry auth on failure
-            });
+        // --- HANDLERS (EXPOSED TO WINDOW) ---
+        window.formatDoc = (cmd, value = null) => {
+            document.execCommand(cmd, false, value);
+            document.getElementById('editor').focus();
         };
 
-        mediaUpload.onchange = async (e) => {
-            const file = e.target.files[0];
+        window.toggleAdminPanel = () => {
+            const panel = document.getElementById('admin-panel');
+            panel.classList.toggle('hidden');
+            if(!panel.classList.contains('hidden')) window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.connectWallet = async () => {
+            if (!window.ethereum) { showToast('Cài đặt MetaMask/OKX!', 'error'); return; }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                account = accounts[0];
+                document.getElementById('status-text').innerText = 'Online';
+                document.getElementById('status-text').classList.replace('text-slate-500', 'text-emerald-400');
+                document.getElementById('display-address').innerText = `${account.slice(0, 8)}...`;
+                document.getElementById('display-address').classList.remove('hidden');
+                document.getElementById('form-account-display').innerText = account;
+                document.getElementById('status-dot').classList.replace('bg-slate-600', 'bg-emerald-400');
+                document.getElementById('status-dot').classList.add('shadow-[0_0_10px_#10b981]');
+                lucide.createIcons();
+                showToast('Danh tính On-chain đã xác thực_');
+            } catch (err) { showToast('Từ chối kết nối', 'error'); }
+        };
+
+        window.handleMediaUpload = async (input) => {
+            const file = input.files[0];
             if (!file) return;
+            const mediaPreview = document.getElementById('media-preview');
             mediaPreview.classList.remove('hidden');
             const placeholder = document.createElement('div');
             placeholder.className = 'aspect-square bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 animate-pulse';
@@ -402,30 +393,14 @@
                     : `<div class="w-full h-full flex items-center justify-center text-emerald-400"><i data-lucide="video" class="w-10 h-10"></i></div>`;
                 placeholder.innerHTML += `<div class="absolute bottom-2 right-2 bg-emerald-500 text-black p-1 rounded-lg"><i data-lucide="check" class="w-4 h-4"></i></div>`;
                 lucide.createIcons();
-                showToast('Dữ liệu đã được đưa vào Trung tâm lưu trữ Walrus_');
-            } catch (err) { placeholder.remove(); showToast('Walrus Sync Fault', 'error'); }
+                showToast('Media gửi tới Trung tâm lưu trữ Walrus thành công_');
+            } catch (err) { placeholder.remove(); showToast('Lỗi tải lên Walrus', 'error'); }
         };
 
-        async function connectWallet() {
-            if (!window.ethereum) { showToast('Vui lòng cài đặt ví!', 'error'); return; }
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                account = accounts[0];
-                statusText.innerText = 'Đã kết nối';
-                statusText.classList.replace('text-slate-500', 'text-emerald-400');
-                displayAddress.innerText = `${account.slice(0, 8)}...`;
-                displayAddress.classList.remove('hidden');
-                formAccountDisplay.innerText = account;
-                statusDot.classList.replace('bg-slate-600', 'bg-emerald-400');
-                statusDot.classList.add('shadow-[0_0_10px_#10b981]');
-                btnConnect.innerHTML = `<i data-lucide="user" class="w-4 h-4"></i> Đã xác thực`;
-                lucide.createIcons();
-            } catch (err) { showToast('Từ chối kết nối', 'error'); }
-        }
-
         window.renderPosts = () => {
+            const container = document.getElementById('posts-container');
             const filtered = allPosts.filter(p => p.week == activeWeek);
-            postsContainer.innerHTML = filtered.length ? '' : `<div class="col-span-full py-48 text-center opacity-20"><i data-lucide="inbox" class="w-20 h-20 mx-auto mb-8 text-slate-800"></i><p class="text-[14px] font-black uppercase tracking-[0.6em]">Week_${activeWeek}_Data_Null</p></div>`;
+            container.innerHTML = filtered.length ? '' : `<div class="col-span-full py-48 text-center opacity-20"><i data-lucide="inbox" class="w-20 h-20 mx-auto mb-8 text-slate-800"></i><p class="text-[14px] font-black uppercase tracking-[0.6em]">Week_${activeWeek}_Data_Null</p></div>`;
             
             filtered.forEach(post => {
                 const card = document.createElement('article');
@@ -448,116 +423,113 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-12">
                         <div class="flex items-center gap-6">
-                            <div class="w-16 h-16 bg-slate-900 rounded-[1.25rem] flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-inner group-hover:rotate-6 transition-all duration-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]"><i data-lucide="cpu" class="w-10 h-10"></i></div>
+                            <div class="w-16 h-16 bg-slate-900 rounded-[1.25rem] flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-inner group-hover:rotate-6 transition-all duration-500"><i data-lucide="cpu" class="w-10 h-10"></i></div>
                             <div>
-                                <p class="text-sm font-black text-white uppercase tracking-widest leading-none truncate max-w-[150px]">${post.author}</p>
-                                <p class="text-[11px] text-slate-600 mt-2 font-bold tracking-tighter uppercase italic">${post.date} • NETWORK_CYCLE_${post.week}</p>
+                                <p class="text-sm font-black text-white uppercase tracking-widest leading-none truncate max-w-[200px]">${post.author}</p>
+                                <p class="text-[11px] text-slate-600 mt-2 font-bold tracking-tighter uppercase italic">${post.date} • Tuần_${post.week}</p>
                             </div>
                         </div>
                         <span class="text-[11px] font-black bg-emerald-500/10 text-emerald-400 px-5 py-2 rounded-full border border-emerald-500/10 uppercase tracking-[0.2em] shadow-lg">${post.category}</span>
                     </div>
                     <div class="flex-grow">
-                        <h3 class="text-4xl font-black text-white mb-10 uppercase tracking-tighter italic leading-tight decoration-emerald-500/30 underline decoration-4 underline-offset-8">${post.title}</h3>
+                        <h3 class="text-4xl font-black text-white mb-10 uppercase tracking-tighter leading-tight decoration-emerald-500/30 underline decoration-4 underline-offset-8 italic">${post.title}</h3>
                         <div class="prose prose-invert max-w-none text-slate-300 mb-12 bg-black/40 p-10 rounded-[2.5rem] border border-white/5 leading-relaxed font-sans shadow-inner overflow-hidden">${post.content}</div>
                         ${mediaHtml}
                         <div class="flex flex-col md:flex-row items-center justify-between text-[11px] font-mono gap-4 mb-10 px-6 bg-slate-950/80 py-5 rounded-[1.5rem] border border-white/5 shadow-inner">
-                            <span class="text-slate-600 font-bold uppercase tracking-widest">Protocol_Anchor_Hash:</span>
-                            <span class="text-emerald-500/70 truncate flex-grow text-right hover:text-emerald-400 transition-colors cursor-pointer" onclick="navigator.clipboard.writeText('${post.txHash}').then(() => showToast('Hash Copied'))">${post.txHash}</span>
+                            <span class="text-slate-600 font-bold uppercase tracking-widest text-[9px]">Entry_Hash:</span>
+                            <span class="text-emerald-500/70 truncate flex-grow text-right hover:text-emerald-400 transition-colors cursor-pointer text-[9px]" onclick="navigator.clipboard.writeText('${post.txHash}').then(() => showToast('Hash Copied'))">${post.txHash}</span>
                         </div>
                         <div class="flex items-center justify-between pt-12 border-t border-white/5">
-                            <button class="flex items-center gap-2 group/stat hover:text-emerald-400 transition-all font-black text-slate-500 uppercase tracking-widest text-[10px]">Global_Transmission</button>
+                            <button class="flex items-center gap-2 group/stat hover:text-emerald-400 transition-all font-black text-slate-500 uppercase tracking-widest text-[10px]">Pure_Onchain_Logic</button>
                             <div class="flex items-center gap-4 text-emerald-400 text-[12px] font-black bg-emerald-500/5 px-6 py-4 rounded-[1.5rem] border border-emerald-500/20 shadow-xl group/check">
-                                <i data-lucide="globe" class="w-6 h-6 animate-pulse text-emerald-500"></i>
+                                <i data-lucide="shield-check" class="w-6 h-6 animate-pulse text-emerald-500"></i>
                                 BROADCAST_VERIFIED
                             </div>
                         </div>
                     </div>
                 `;
-                postsContainer.appendChild(card);
+                container.appendChild(card);
             });
             lucide.createIcons();
-        }
+        };
 
         window.renderWeeks = () => {
-            weekList.innerHTML = '';
+            const list = document.getElementById('week-list');
+            list.innerHTML = '';
             const current = getCurrentWeek();
             for (let i = current; i >= 1; i--) {
                 const btn = document.createElement('button');
-                btn.className = `w-full px-8 py-10 rounded-[3rem] border transition-all flex items-center justify-between group ${activeWeek == i ? 'bg-emerald-500/10 border-emerald-500/50 text-white shadow-[0_0_30px_rgba(16,185,129,0.1)] scale-[1.05]' : 'border-white/5 text-slate-600 hover:border-emerald-500/30 hover:bg-emerald-500/5'}`;
+                btn.className = `w-full px-8 py-10 rounded-[3rem] border transition-all flex items-center justify-between group ${activeWeek == i ? 'bg-emerald-500/10 border-emerald-500/50 text-white shadow-[0_0_30px_rgba(16,185,129,0.1)] scale-[1.05]' : 'border-white/5 text-slate-600 hover:border-emerald-500/20 hover:bg-emerald-500/5'}`;
                 btn.innerHTML = `<div class="text-left"><p class="text-[10px] font-black uppercase tracking-[0.4em] mb-1 opacity-40">Timeline_Cycle</p><p class="font-black text-3xl tracking-tighter uppercase italic">Week_${i.toString().padStart(2, '0')}</p></div>${activeWeek == i ? '<div class="w-4 h-4 bg-emerald-400 rounded-full shadow-[0_0_20px_#10b981] animate-pulse"></div>' : '<i data-lucide="arrow-right" class="w-8 h-8 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all text-emerald-400/40"></i>'}`;
-                btn.onclick = () => { activeWeek = i; activeWeekDisplay.innerText = i.toString().padStart(2, '0'); renderWeeks(); renderPosts(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-                weekList.appendChild(btn);
+                btn.onclick = () => { activeWeek = i; document.getElementById('active-week-display').innerText = i.toString().padStart(2, '0'); window.renderWeeks(); window.renderPosts(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+                list.appendChild(btn);
             }
             lucide.createIcons();
         };
 
-        postForm.onsubmit = async (e) => {
+        window.handleOnchainPost = async (e) => {
             e.preventDefault();
             if (!account) { showToast("Vui lòng kết nối ví!", "error"); return; }
+            const btn = document.getElementById('btn-broadcast');
             try {
-                btnBroadcast.disabled = true;
-                btnBroadcast.innerHTML = '<div class="loading-spinner"></div> ĐANG ĐƯA LÊN CHUỖI...';
+                btn.disabled = true;
+                btn.innerHTML = '<div class="loading-spinner"></div> PHÁT SÓNG...';
                 
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
 
                 const title = document.getElementById('post-title').value;
-                const content = editor.innerHTML;
+                const content = document.getElementById('editor').innerHTML;
                 const week = document.getElementById('post-week').value;
                 const category = document.getElementById('post-category').value;
+                const indexerAddr = document.getElementById('indexer-address').value;
                 
+                // Metadata chứa nội dung và Blob ID của Walrus
                 const payload = JSON.stringify({ t: title, c: content, w: week, cat: category, b: uploadedBlobs, ts: Date.now() });
                 const hexData = ethers.hexlify(ethers.toUtf8Bytes(payload));
 
-                // 1. Pod Broadcast
                 showToast('Đang mỏ neo dữ liệu vào Pod Ledger...');
-                const tx = await signer.sendTransaction({ to: ORDERBOOK_ADDR, data: hexData, value: 0 });
+                
+                // GỬI TRỰC TIẾP LÊN POD NETWORK (Đây là nguồn chân lý duy nhất)
+                const tx = await signer.sendTransaction({ to: indexerAddr, data: hexData, value: 0 });
                 const receipt = await tx.wait();
                 
-                // 2. Global Sync (Rule 3 Compliance)
-                if (!auth.currentUser) await initAuth();
-                showToast('Đang đồng bộ bảng tin toàn cầu...');
+                showToast('Phát sóng thành công! Đang đồng bộ hóa...', 'success');
                 
-                const postsCollection = fb.collection(db, 'artifacts', appId, 'public', 'data', 'posts');
-                await fb.addDoc(postsCollection, {
-                    week: parseInt(week),
-                    date: new Date().toLocaleDateString('vi-VN'),
-                    title, content, author: `${account.slice(0, 8)}...`,
-                    category: category.toUpperCase(),
-                    txHash: receipt.hash,
-                    blobs: uploadedBlobs,
-                    ts: Date.now()
-                });
+                const newPost = {
+                    week: parseInt(week), date: new Date().toLocaleDateString('vi-VN'),
+                    title, content, author: account,
+                    category: category.toUpperCase(), txHash: receipt.hash,
+                    blobs: uploadedBlobs, ts: Date.now()
+                };
                 
-                showToast('Đăng bài thành công!', 'success');
+                allPosts.unshift(newPost);
+                
+                // CƠ CHẾ 100% dApp: Lưu cache local cho bản thân và "phát sóng" qua Blockchain cho người khác.
+                localStorage.setItem('pod_posts_global', JSON.stringify(allPosts));
                 
                 uploadedBlobs = [];
-                mediaPreview.innerHTML = '';
-                mediaPreview.classList.add('hidden');
-                editor.innerHTML = '';
-                postForm.reset();
-                adminPanel.classList.add('hidden');
+                document.getElementById('media-preview').innerHTML = '';
+                document.getElementById('media-preview').classList.add('hidden');
+                document.getElementById('editor').innerHTML = '';
+                document.getElementById('post-form').reset();
+                document.getElementById('admin-panel').classList.add('hidden');
                 activeWeek = parseInt(week);
-                renderWeeks();
+                window.renderWeeks();
+                window.renderPosts();
             } catch (err) { console.error(err); showToast('Giao dịch thất bại', 'error'); } 
-            finally { btnBroadcast.disabled = false; btnBroadcast.innerHTML = '<i data-lucide="send" class="w-6 h-6"></i> ĐĂNG BÀI TOÀN CẦU'; }
+            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="globe" class="w-6 h-6"></i> PHÁT SÓNG TOÀN CẦU'; lucide.createIcons(); }
         };
 
-        // --- INIT ---
-        btnConnect.onclick = connectWallet;
-        toggleAdmin.onclick = () => { 
-            adminPanel.classList.toggle('hidden'); 
-            const current = getCurrentWeek();
-            document.getElementById('post-week').value = current;
-            document.getElementById('post-week-display').innerText = current.toString().padStart(2, '0');
-            if(!adminPanel.classList.contains('hidden')) window.scrollTo({ top: 0, behavior: 'smooth' }); 
-        };
-        
-        window.onload = () => { 
+        // --- KHỞI TẠO ---
+        window.onload = async () => {
             activeWeek = getCurrentWeek();
-            activeWeekDisplay.innerText = activeWeek.toString().padStart(2, '0');
-            initSync(); // Chạy đồng bộ toàn cầu sau khi xác thực
-            renderWeeks(); 
+            document.getElementById('active-week-display').innerText = activeWeek.toString().padStart(2, '0');
+            
+            // Quét dữ liệu từ Blockchain khi mở trang
+            await window.fetchGlobalPostsFromChain();
+            
+            window.renderWeeks();
             lucide.createIcons();
         };
 

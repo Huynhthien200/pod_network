@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pod Network | Weekly Protocol Insights</title>
+    <title>Pod Network | Bio-Tech Weekly Insights</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.1/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -30,7 +30,7 @@
             width: 600px;
             height: 600px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
             filter: blur(80px);
             z-index: -1;
             pointer-events: none;
@@ -43,10 +43,10 @@
         }
 
         .glass-panel {
-            background: rgba(5, 15, 10, 0.75);
-            backdrop-filter: blur(25px) saturate(200%);
+            background: rgba(5, 15, 10, 0.85);
+            backdrop-filter: blur(30px) saturate(200%);
             border: 1px solid rgba(16, 185, 129, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
         }
 
         .border-glow {
@@ -99,35 +99,49 @@
             width: max-content;
             animation: marquee 30s linear infinite;
         }
+
+        /* Editor Styling */
+        #editor {
+            min-height: 300px;
+            outline: none;
+            overflow-y: auto;
+        }
+        #editor h1 { font-size: 2.25rem; font-weight: 800; color: white; margin-bottom: 1rem; border-bottom: 2px solid rgba(16, 185, 129, 0.2); padding-bottom: 0.5rem; }
+        #editor h2 { font-size: 1.75rem; font-weight: 700; color: #10b981; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        #editor h3 { font-size: 1.5rem; font-weight: 600; color: #34d399; margin-top: 1rem; margin-bottom: 0.5rem; }
+        #editor p { margin-bottom: 1.25rem; line-height: 1.75; }
+        #editor blockquote { border-left: 4px solid #10b981; padding-left: 1.5rem; margin: 1.5rem 0; color: #94a3b8; font-style: italic; background: rgba(16, 185, 129, 0.05); padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        #editor img { border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); margin: 1.5rem 0; max-width: 100%; height: auto; }
+        #editor:empty:before { content: attr(data-placeholder); color: #475569; pointer-events: none; }
     </style>
 </head>
 <body class="selection:bg-emerald-500/30">
 
     <div class="bg-glow" style="top: -100px; left: -100px;"></div>
-    <div class="bg-glow" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(5, 150, 105, 0.08) 0%, transparent 70%);"></div>
+    <div class="bg-glow" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(5, 150, 105, 0.1) 0%, transparent 70%);"></div>
 
+    <!-- Network Status Bar -->
     <div class="sticky top-0 z-[100] bg-[#010a05]/95 backdrop-blur-md border-b border-white/5 py-1.5 px-6 overflow-hidden">
         <div class="animate-marquee italic font-bold tracking-widest text-[9px] text-emerald-400/80 uppercase">
-            <span class="px-4">Network Status: POD_V1_DEVNET</span>
-            <span class="px-4">RPC: https://rpc.v1.dev.pod.network</span>
-            <span class="px-4">Chain_ID: 1293</span>
-            <span class="px-4">Native Token: pUSD</span>
-            <span class="px-4">Orderbook Interface: 0xC10B</span>
-            <span class="px-4">Consensus: Instant Attestation (1-RTT)</span>
-            <span class="px-4">Network Status: POD_V1_DEVNET</span>
-            <span class="px-4">Orderbook Enshrined: 0xC10B...</span>
+            <span class="px-4">Pod Network Ledger Active</span>
+            <span class="px-4">Walrus Testnet: Media Storage Online</span>
+            <span class="px-4">Protocol Week: Automated Sequential Cycle</span>
+            <span class="px-4">Anchor: 0xC10B (Orderbook)</span>
+            <span class="px-4">Finality: Instant (1-RTT)</span>
+            <span class="px-4">Interface: EVM Compatible JSON-RPC</span>
         </div>
     </div>
 
+    <!-- Main Navigation -->
     <nav class="sticky top-[28px] z-50 glass-panel mx-6 my-4 rounded-2xl border border-emerald-500/10">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center gap-4 group cursor-pointer" onclick="location.reload()">
                 <div class="w-12 h-12 bg-slate-900 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 group-hover:border-emerald-400/60 transition-all duration-500 shadow-inner">
-                    <i data-lucide="shield-check" class="w-7 h-7"></i>
+                    <i data-lucide="zap" class="w-7 h-7"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold text-white tracking-tighter leading-none uppercase">Pod<span class="text-gradient">_Network</span></h1>
-                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] block mt-1">Decentralized Intelligence</span>
+                    <h1 class="text-xl font-extrabold text-white tracking-tighter leading-none uppercase">Pod<span class="text-gradient">_Blog</span></h1>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] block mt-1">Decentralized Weekly Journal</span>
                 </div>
             </div>
 
@@ -140,9 +154,9 @@
                     <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-600"></div>
                 </div>
                 
-                <button id="btn-connect" class="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-slate-950 transition-all">
+                <button id="btn-connect" class="btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-slate-950 transition-all active:scale-95">
                     <i data-lucide="wallet" class="w-4 h-4"></i>
-                    <span>CONNECT_WALLET</span>
+                    <span>KẾT NỐI VÍ</span>
                 </button>
                 
                 <button id="toggle-admin" class="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all">
@@ -156,188 +170,169 @@
 
     <main class="max-w-7xl mx-auto px-6 py-10">
         
-        <!-- Simplified Broadcast Form -->
-        <section id="admin-panel" class="hidden mb-16 glass-panel rounded-[2.5rem] p-10 shadow-2xl animate-in slide-in-from-top-4 duration-500">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 border-b border-white/5 pb-8 gap-6">
-                <div class="flex items-center gap-5">
-                    <div class="p-4 bg-emerald-500/10 rounded-2xl text-emerald-400">
-                        <i data-lucide="zap" class="w-8 h-8"></i>
+        <!-- On-chain Content Creator -->
+        <section id="admin-panel" class="hidden mb-16 glass-panel rounded-[2.5rem] p-8 shadow-2xl animate-in slide-in-from-top-4 duration-500 border border-emerald-500/20">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-white/5 pb-6 gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-emerald-500/10 rounded-2xl text-emerald-400 shadow-inner">
+                        <i data-lucide="feather" class="w-8 h-8"></i>
                     </div>
                     <div>
-                        <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase leading-none italic">Fast_Broadcast</h2>
-                        <div class="flex items-center gap-2 mt-2">
-                             <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                             <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest italic">Anchoring via Enshrined Orderbook (0xC10B)</span>
-                        </div>
+                        <h2 class="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">Draft_Transmission</h2>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mt-2">Storage: Pod Ledger (Data) + Walrus (Media)</p>
                     </div>
                 </div>
-                
-                <div class="bg-black/40 border border-emerald-500/20 rounded-2xl px-6 py-4 flex items-center gap-4">
-                    <div class="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 border border-emerald-500/20">
-                        <i data-lucide="user" class="w-5 h-5"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Signer_Account</span>
-                        <span id="form-account-display" class="text-xs font-mono text-white tracking-tighter italic">Anonymous_Entry</span>
-                    </div>
-                </div>
+                <div id="form-account-display" class="text-[10px] font-mono text-emerald-500/50 bg-black/40 px-4 py-2 rounded-lg border border-emerald-500/10 italic">Waiting_for_Signer...</div>
             </div>
 
-            <form id="post-form" class="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                <div class="lg:col-span-3 space-y-8">
-                    <div class="group">
-                        <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3 ml-1 group-focus-within:text-emerald-400 transition-colors">Broadcast_Title</label>
-                        <input type="text" id="post-title" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl px-6 py-5 focus:border-emerald-500/50 outline-none text-white font-bold text-xl transition-all shadow-inner" placeholder="Headline..." required>
+            <form id="post-form" class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                <div class="lg:col-span-3 space-y-6">
+                    <input type="text" id="post-title" class="w-full bg-slate-950/50 border border-white/10 rounded-2xl px-8 py-6 focus:border-emerald-500/50 outline-none text-white font-black text-3xl transition-all shadow-inner" placeholder="Log Entry Title..." required>
+                    
+                    <!-- Toolbar -->
+                    <div class="bg-black/60 border border-white/10 rounded-2xl p-3 flex flex-wrap gap-3 sticky top-40 z-20 backdrop-blur-md shadow-2xl">
+                        <div class="flex gap-1 bg-white/5 p-1 rounded-xl">
+                            <button type="button" onclick="formatDoc('formatBlock', 'h1')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400">H1</button>
+                            <button type="button" onclick="formatDoc('formatBlock', 'h2')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400">H2</button>
+                            <button type="button" onclick="formatDoc('formatBlock', 'h3')" class="px-3 py-1.5 hover:bg-emerald-500/20 rounded-lg text-xs font-black text-emerald-400">H3</button>
+                        </div>
+                        <div class="flex gap-1 bg-white/5 p-1 rounded-xl">
+                            <button type="button" onclick="formatDoc('bold')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="bold" class="w-4 h-4"></i></button>
+                            <button type="button" onclick="formatDoc('italic')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="italic" class="w-4 h-4"></i></button>
+                            <button type="button" onclick="formatDoc('formatBlock', 'blockquote')" class="p-2 hover:bg-emerald-500/20 rounded-lg text-emerald-500"><i data-lucide="quote" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="flex-grow"></div>
+                        <button type="button" onclick="document.getElementById('media-upload').click()" id="upload-btn" class="px-5 py-2.5 bg-emerald-500 text-slate-950 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Walrus_Upload
+                        </button>
+                        <input type="file" id="media-upload" class="hidden" accept="image/*,video/*">
                     </div>
-                    <div class="group">
-                        <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3 ml-1 group-focus-within:text-emerald-400 transition-colors">Payload_Data (Content)</label>
-                        <textarea id="post-content" class="w-full h-40 bg-slate-950/50 border border-white/10 rounded-2xl px-6 py-6 focus:border-emerald-500/50 outline-none text-slate-300 font-mono text-sm leading-relaxed resize-none transition-all shadow-inner" placeholder="Post content to be recorded on Pod Network..." required></textarea>
-                    </div>
+
+                    <!-- Editor -->
+                    <div id="editor" contenteditable="true" class="w-full bg-slate-950/60 border border-white/10 rounded-[2rem] px-8 py-10 focus:border-emerald-500/50 outline-none text-slate-300 text-lg leading-relaxed shadow-inner" data-placeholder="What's happening in the network protocol today?"></div>
+                    
+                    <div id="media-preview" class="hidden grid grid-cols-2 md:grid-cols-4 gap-6 bg-black/40 p-6 rounded-[2rem] border border-white/5 shadow-2xl"></div>
                 </div>
 
                 <div class="space-y-8">
-                    <div class="bg-white/[0.02] rounded-[2rem] p-8 border border-white/5 space-y-8 shadow-2xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl pointer-events-none"></div>
-                        
+                    <div class="bg-white/[0.02] rounded-[2.5rem] p-8 border border-white/5 space-y-8 shadow-2xl sticky top-40">
                         <div class="space-y-4">
-                            <div class="space-y-3">
-                                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Cycle_W</label>
-                                <input type="number" id="post-week" value="12" class="w-full bg-slate-950 border border-emerald-500/10 rounded-xl px-4 py-4 text-center text-emerald-400 font-black text-2xl">
-                            </div>
-                            <div class="space-y-3">
-                                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Class</label>
-                                <select id="post-category" class="w-full bg-slate-950 border border-emerald-500/10 rounded-xl px-2 py-5 text-[10px] font-black text-white outline-none appearance-none text-center cursor-pointer uppercase tracking-widest">
-                                    <option value="Technical">TECHNICAL</option>
-                                    <option value="Community">COMMUNITY</option>
-                                    <option value="Ecosystem">PARTNER</option>
-                                </select>
-                            </div>
+                            <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Cycle_ID</label>
+                            <div id="post-week-display" class="w-full bg-slate-950 border border-emerald-500/20 rounded-2xl py-6 text-center text-emerald-400 font-black text-5xl shadow-inner">01</div>
+                            <input type="hidden" id="post-week" value="1">
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <label class="block text-[11px] font-black text-slate-500 uppercase tracking-widest ml-2">Class</label>
+                            <select id="post-category" class="w-full bg-slate-950 border border-emerald-500/10 rounded-2xl px-4 py-5 text-[11px] font-black text-white outline-none appearance-none text-center cursor-pointer shadow-inner">
+                                <option value="Technical">TECHNICAL</option>
+                                <option value="Ecosystem">ECOSYSTEM</option>
+                                <option value="Community">COMMUNITY</option>
+                            </select>
                         </div>
 
-                        <div class="pt-4">
-                            <button type="submit" id="btn-broadcast" class="w-full btn-primary text-slate-950 font-black py-5 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform uppercase tracking-widest">
-                                <i data-lucide="send" class="w-5 h-5"></i>
+                        <div class="pt-6">
+                            <button type="submit" id="btn-broadcast" class="w-full btn-primary text-slate-950 font-black py-6 rounded-[1.5rem] flex items-center justify-center gap-3 active:scale-95 transition-transform uppercase tracking-[0.2em] text-sm">
+                                <i data-lucide="send" class="w-6 h-6"></i>
                                 Post_Onchain
                             </button>
-                            <p class="text-[8px] text-center text-slate-600 mt-4 italic font-bold">No custom contract required.</p>
                         </div>
                     </div>
                 </div>
-                <!-- Hidden Contract Address (Defaults to Orderbook) -->
-                <input type="hidden" id="contract-address" value="0x000000000000000000000000000000000000C10B">
             </form>
         </section>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <!-- Sidebar Navigation -->
             <aside class="lg:col-span-3 space-y-10">
                 <div>
-                    <h3 class="text-white font-black text-sm tracking-[0.3em] flex items-center gap-3 uppercase px-2 mb-8">
+                    <h3 class="text-white font-black text-sm tracking-[0.4em] flex items-center gap-3 uppercase px-4 mb-10">
                         <i data-lucide="layers" class="w-5 h-5 text-emerald-400"></i>
-                        Timeline
+                        Chronicles
                     </h3>
-                    <div id="week-list" class="space-y-3 custom-scrollbar max-h-[400px] overflow-y-auto pr-2"></div>
+                    <div id="week-list" class="space-y-4 custom-scrollbar max-h-[600px] overflow-y-auto pr-4 relative">
+                        <!-- Sequential week list -->
+                    </div>
                 </div>
 
-                <!-- Precompile References -->
-                <div>
-                    <h3 class="text-white font-black text-[10px] tracking-[0.2em] flex items-center gap-3 uppercase px-2 mb-6">
-                        <i data-lucide="database" class="w-4 h-4 text-emerald-500"></i>
-                        Enshrined_Hooks
-                    </h3>
-                    <div class="glass-panel rounded-2xl p-5 space-y-4 border-emerald-500/5">
-                        <div class="group/reg cursor-pointer" onclick="copyText('0x000000000000000000000000000000000000C10B', 'Orderbook')">
-                            <p class="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1 group-hover/reg:text-emerald-400 transition-colors">Orderbook_Protocol</p>
-                            <p class="text-[9px] font-mono text-white truncate opacity-50 group-hover/reg:opacity-100 italic">0x00000...C10B</p>
-                        </div>
-                        <div class="group/reg cursor-pointer" onclick="copyText('0x50d0000000000000000000000000000000000001', 'Bridge')">
-                            <p class="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1 group-hover/reg:text-emerald-400 transition-colors">Bridge_Precompile</p>
-                            <p class="text-[9px] font-mono text-white truncate opacity-50 group-hover/reg:opacity-100 italic">0x50d00...0001</p>
-                        </div>
-                    </div>
+                <div class="glass-panel p-8 rounded-[2rem] border-emerald-500/5">
+                    <h4 class="text-emerald-400 text-[11px] font-black uppercase tracking-widest mb-4 flex items-center gap-3">
+                        <i data-lucide="hard-drive" class="w-4 h-4"></i> Ledger_Sync
+                    </h4>
+                    <p class="text-[11px] text-slate-500 leading-relaxed font-sans">
+                        Dữ liệu media được phân tán qua Walrus Testnet. Metadata được neo giữ tại Pod Enshrined Orderbook.
+                    </p>
                 </div>
             </aside>
 
-            <div class="lg:col-span-9 space-y-12">
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+            <!-- Broadcast Feed -->
+            <div class="lg:col-span-9 space-y-16">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
                     <div>
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="h-px w-8 bg-emerald-500 shadow-[0_0_10px_#10b981]"></div>
-                            <span class="text-emerald-400 text-[10px] font-black uppercase tracking-[0.4em]">Protocol_Telemetry</span>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-px w-12 bg-emerald-500 shadow-[0_0_15px_#10b981]"></div>
+                            <span class="text-emerald-400 text-[11px] font-black uppercase tracking-[0.5em]">Ledger_Output</span>
                         </div>
-                        <h2 class="text-5xl font-black text-white italic tracking-tighter uppercase leading-none">Weekly_<span id="active-week-display" class="text-slate-800 tracking-normal not-italic font-light">Logs</span></h2>
-                    </div>
-                    <div class="flex glass-panel p-1.5 rounded-xl border-white/10 shadow-2xl">
-                        <button class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[10px] font-black bg-emerald-400/10 text-emerald-400 uppercase tracking-widest">
-                            <i data-lucide="layout-grid" class="w-4 h-4"></i> Grid_Feed
-                        </button>
+                        <h2 class="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">Weekly_<span id="active-week-display" class="text-slate-800 tracking-normal not-italic font-light">Logs</span></h2>
                     </div>
                 </div>
-                <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 gap-10"></div>
+                <div id="posts-container" class="grid grid-cols-1 gap-12"></div>
             </div>
         </div>
     </main>
 
-    <footer class="max-w-7xl mx-auto px-6 pt-24 pb-32 mt-20 border-t border-emerald-500/10 relative">
-        <div class="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black text-slate-700 tracking-[0.3em] uppercase">
-            <span>© 2026 POD NETWORK • ANCHORED_ON_CHAIN</span>
-            <div class="flex gap-10">
-                <span class="flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div> SYSTEM_NOMINAL</span>
-                <span>ID: 1293</span>
-            </div>
-        </div>
-    </footer>
-
     <script>
+        // --- CONSTANTS ---
         const POD_CHAIN_ID = '0x50d'; 
         const ORDERBOOK_ADDR = '0x000000000000000000000000000000000000C10B';
-        const POD_NETWORK_PARAMS = {
-            chainId: POD_CHAIN_ID,
-            chainName: 'Pod V1 Devnet',
-            rpcUrls: ['https://rpc.v1.dev.pod.network'],
-            nativeCurrency: { name: 'pUSD', symbol: 'pUSD', decimals: 18 },
-            blockExplorerUrls: ['https://explorer.v1.dev.pod.network']
-        };
+        const WALRUS_PUBLISHER = 'https://publisher.walrus-testnet.walrus.space';
+        const WALRUS_AGGREGATOR = 'https://aggregator.walrus-testnet.walrus.space';
+        const START_DATE = new Date('2026-01-01').getTime();
 
-        let account = null;
-        let activeWeek = 12;
-        let posts = [
-            {
-                id: 1, week: 12, date: '23/04/2026', title: 'Pod v1 Devnet: Data Anchoring Success',
-                content: 'Giao dịch này được gửi trực tiếp tới Orderbook Contract để lưu trữ thông tin on-chain mà không cần contract trung gian.',
-                author: '0x71C...4E21', category: 'TECHNICAL', txHash: '0x74d6c...82f', attestations: 24
-            }
-        ];
-
+        // --- DOM ELEMENTS ---
         const btnConnect = document.getElementById('btn-connect');
-        const statusText = document.getElementById('status-text');
-        const displayAddress = document.getElementById('display-address');
-        const formAccountDisplay = document.getElementById('form-account-display');
-        const statusDot = document.getElementById('status-dot');
         const adminPanel = document.getElementById('admin-panel');
         const toggleAdmin = document.getElementById('toggle-admin');
         const postForm = document.getElementById('post-form');
+        const editor = document.getElementById('editor');
         const postsContainer = document.getElementById('posts-container');
         const weekList = document.getElementById('week-list');
         const activeWeekDisplay = document.getElementById('active-week-display');
+        const mediaUpload = document.getElementById('media-upload');
+        const mediaPreview = document.getElementById('media-preview');
         const toastContainer = document.getElementById('toast-container');
-        const btnBroadcast = document.getElementById('btn-broadcast');
 
-        function copyText(text, label = 'Data') {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.select();
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            if (successful) showToast(`${label} copied to clipboard_`, 'success');
+        // --- APPLICATION STATE ---
+        let account = null;
+        let activeWeek = 1;
+        let uploadedBlobs = [];
+        
+        // Load data from localStorage to prevent reset on reload
+        let posts = JSON.parse(localStorage.getItem('pod_v1_journal') || '[]');
+        if (posts.length === 0) {
+            posts = [{
+                id: Date.now(), week: 1, date: '04/01/2026', title: 'Genesis System Online',
+                content: '<h1>Initial Protocol Entry</h1><p>Pod Network has successfully integrated decentralized media storage via Walrus Testnet.</p>',
+                author: 'System_Admin', category: 'TECHNICAL', txHash: '0xgenesis...anchor', blobs: []
+            }];
+        }
+
+        // --- UTILS ---
+        function getCurrentWeek() {
+            const now = Date.now();
+            const diff = now - START_DATE;
+            return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) + 1);
+        }
+
+        function formatDoc(cmd, value = null) {
+            document.execCommand(cmd, false, value);
+            editor.focus();
         }
 
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = `glass-panel px-6 py-4 rounded-2xl flex items-center gap-4 text-[11px] font-black shadow-2xl animate-in slide-in-from-right-8 duration-500 pointer-events-auto ${
-                type === 'error' ? 'border-red-500/40 text-red-400' : 'border-emerald-400/40 text-emerald-400'
+            toast.className = `glass-panel px-6 py-4 rounded-2xl flex items-center gap-4 text-[11px] font-black shadow-2xl animate-in slide-in-from-right-8 duration-500 border-emerald-500/20 ${
+                type === 'error' ? 'text-red-400' : 'text-emerald-400'
             }`;
             const icon = type === 'error' ? 'alert-octagon' : 'cpu';
             toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> ${message.toUpperCase()}`;
@@ -349,78 +344,122 @@
             }, 5000);
         }
 
-        function getProvider() {
-            if (window.okxwallet) return window.okxwallet;
-            if (window.ethereum) {
-                if (window.ethereum.providers) return window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum;
-                return window.ethereum;
-            }
-            return null;
-        }
+        // --- WALRUS MEDIA INTEGRATION ---
+        mediaUpload.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        async function connectWallet() {
-            const provider = getProvider();
-            if (!provider) { showToast('Wallet Not Detected!', 'error'); return; }
+            mediaPreview.classList.remove('hidden');
+            const placeholder = document.createElement('div');
+            placeholder.className = 'aspect-square bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 animate-pulse';
+            placeholder.innerHTML = `<i data-lucide="loader" class="animate-spin text-emerald-500"></i>`;
+            mediaPreview.appendChild(placeholder);
+            lucide.createIcons();
+
             try {
-                btnConnect.disabled = true;
-                btnConnect.innerHTML = '<div class="loading-spinner"></div> SYNCING...';
-                const accounts = await provider.request({ method: 'eth_requestAccounts' });
-                account = accounts[0];
-                try {
-                    await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: POD_CHAIN_ID }] });
-                } catch (err) {
-                    if (err.code === 4902) await provider.request({ method: 'wallet_addEthereumChain', params: [POD_NETWORK_PARAMS] });
+                const response = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, {
+                    method: 'PUT',
+                    body: file
+                });
+                if (!response.ok) throw new Error('Walrus Upload Error');
+                const result = await response.json();
+                const blobId = result.newlyCreated ? result.newlyCreated.blobObject.blobId : result.alreadyCertified.blobId;
+                
+                const blobInfo = { blobId, type: file.type.startsWith('image/') ? 'image' : 'video' };
+                uploadedBlobs.push(blobInfo);
+
+                placeholder.className = 'relative group aspect-square rounded-2xl overflow-hidden border border-emerald-500/30 bg-black shadow-2xl';
+                if (blobInfo.type === 'image') {
+                    placeholder.innerHTML = `<img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">`;
+                } else {
+                    placeholder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-emerald-500"><i data-lucide="video" class="w-8 h-8"></i></div>`;
                 }
-                statusText.innerText = 'Verified';
-                statusText.classList.replace('text-slate-500', 'text-emerald-400');
-                displayAddress.innerText = `${account.slice(0, 8)}...${account.slice(-6)}`;
-                displayAddress.classList.remove('hidden');
-                formAccountDisplay.innerText = account;
-                statusDot.classList.replace('bg-slate-600', 'bg-emerald-400');
-                statusDot.classList.add('shadow-[0_0_12px_#10b981]');
-                btnConnect.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4"></i> ${account.slice(0, 6)}...${account.slice(-4)}`;
-                btnConnect.classList.replace('btn-primary', 'bg-emerald-500/10');
-                btnConnect.classList.add('text-emerald-400', 'border', 'border-emerald-500/20');
-                showToast('Authentication Synchronized_');
+                placeholder.innerHTML += `<div class="absolute bottom-2 right-2 bg-emerald-500 text-black p-1 rounded-lg"><i data-lucide="check" class="w-4 h-4"></i></div>`;
                 lucide.createIcons();
+                showToast('Walrus Storage Synchronized_');
             } catch (err) {
-                console.error(err);
-                showToast(err.message || 'Auth Fault_', 'error');
-                btnConnect.disabled = false;
-                btnConnect.innerHTML = '<i data-lucide="wallet" class="w-4 h-4"></i> CONNECT_WALLET';
-                lucide.createIcons();
+                placeholder.remove();
+                showToast('Walrus storage connection fault', 'error');
             }
+        };
+
+        // --- WEB3 CONNECTION ---
+        async function connectWallet() {
+            if (!window.ethereum) { showToast('Identity Vault Not Detected', 'error'); return; }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                account = accounts[0];
+                document.getElementById('status-text').innerText = 'Verified';
+                document.getElementById('status-text').classList.replace('text-slate-500', 'text-emerald-400');
+                document.getElementById('display-address').innerText = `${account.slice(0, 8)}...`;
+                document.getElementById('display-address').classList.remove('hidden');
+                document.getElementById('form-account-display').innerText = account;
+                document.getElementById('status-dot').classList.replace('bg-slate-600', 'bg-emerald-400');
+                btnConnect.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Authenticated`;
+                lucide.createIcons();
+                showToast('Identity Handshake Successful_');
+            } catch (err) { showToast('Authorization Aborted', 'error'); }
         }
 
+        // --- RENDERING CORE ---
         function renderPosts() {
             const filtered = posts.filter(p => p.week == activeWeek);
-            postsContainer.innerHTML = filtered.length ? '' : `<div class="col-span-full py-48 text-center opacity-30"><i data-lucide="database-zap" class="w-16 h-16 mx-auto mb-8 text-slate-800"></i><p class="text-[13px] font-black uppercase tracking-[0.5em]">No data for Week_${activeWeek}</p></div>`;
+            postsContainer.innerHTML = filtered.length ? '' : `
+                <div class="col-span-full py-48 text-center opacity-20">
+                    <i data-lucide="inbox" class="w-20 h-20 mx-auto mb-8 text-slate-800"></i>
+                    <p class="text-[14px] font-black uppercase tracking-[0.6em]">Null_Cycle_Telemetry</p>
+                </div>
+            `;
+            
             filtered.forEach(post => {
                 const card = document.createElement('article');
-                card.className = 'glass-panel border-glow rounded-[2.5rem] overflow-hidden flex flex-col group relative shadow-2xl';
+                card.className = 'glass-panel border-glow rounded-[3rem] overflow-hidden flex flex-col group relative p-12 shadow-2xl';
+                
+                let mediaHtml = '';
+                if (post.blobs && post.blobs.length > 0) {
+                    mediaHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">`;
+                    post.blobs.forEach(blob => {
+                        const url = `${WALRUS_AGGREGATOR}/v1/blobs/${blob.blobId}`;
+                        if (blob.type === 'image') {
+                            mediaHtml += `<div class="rounded-3xl overflow-hidden border border-white/5 bg-black"><img src="${url}" class="w-full h-auto hover:scale-105 transition-transform duration-1000 cursor-zoom-in"></div>`;
+                        } else {
+                            mediaHtml += `<div class="rounded-3xl overflow-hidden border border-white/5 bg-black"><video controls src="${url}" class="w-full h-auto"></video></div>`;
+                        }
+                    });
+                    mediaHtml += `</div>`;
+                }
+
                 card.innerHTML = `
-                    <div class="p-8 pb-5 flex justify-between items-start">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-emerald-400 shadow-inner group-hover:rotate-6 transition-all border border-emerald-500/20"><i data-lucide="terminal"></i></div>
-                            <div class="text-[10px] font-black uppercase tracking-widest"><p class="text-white">${post.author}</p><p class="text-slate-600 mt-1.5">${post.date}</p></div>
+                    <div class="flex justify-between items-start mb-12">
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 bg-slate-900 rounded-[1.25rem] flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-inner group-hover:rotate-6 transition-all duration-500"><i data-lucide="cpu" class="w-10 h-10"></i></div>
+                            <div>
+                                <p class="text-sm font-black text-white uppercase tracking-widest leading-none">${post.author}</p>
+                                <p class="text-[11px] text-slate-600 mt-2 font-bold tracking-tighter uppercase italic">${post.date} • Week_${post.week.toString().padStart(2, '0')}</p>
+                            </div>
                         </div>
-                        <span class="text-[9px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-500/20 uppercase tracking-[0.2em] shadow-sm">${post.category}</span>
+                        <span class="text-[11px] font-black bg-emerald-500/10 text-emerald-400 px-5 py-2 rounded-full border border-emerald-500/10 uppercase tracking-[0.2em] shadow-lg">${post.category}</span>
                     </div>
-                    <div class="px-8 pb-10 flex-grow">
-                        <h3 class="text-2xl font-black text-white mb-5 uppercase italic tracking-tighter italic leading-tight">${post.title}</h3>
-                        <div class="bg-black/50 rounded-[2rem] p-7 border border-emerald-500/10 mb-8 relative shadow-inner">
-                            <p class="text-[13px] text-slate-400 leading-relaxed font-sans italic opacity-90 group-hover:opacity-100 transition-opacity">"${post.content}"</p>
+                    <div class="flex-grow">
+                        <h3 class="text-4xl font-black text-white mb-10 uppercase tracking-tighter italic leading-tight italic decoration-emerald-500/30 underline decoration-4 underline-offset-8">${post.title}</h3>
+                        <div class="prose prose-invert max-w-none text-slate-300 mb-12 bg-black/40 p-10 rounded-[2.5rem] border border-white/5 leading-relaxed font-sans shadow-inner">
+                            ${post.content}
                         </div>
-                        <div class="flex items-center justify-between text-[9px] font-mono mb-8 px-4 bg-slate-950/80 py-3 rounded-xl border border-white/5 shadow-inner">
-                            <span class="text-slate-600 font-bold uppercase tracking-widest">Entry_Hash:</span>
-                            <span class="text-emerald-500/60 truncate ml-4 mr-2 hover:text-emerald-400 transition-colors cursor-pointer" onclick="copyText('${post.txHash}', 'Hash')">${post.txHash}</span>
+                        ${mediaHtml}
+                        <div class="flex flex-col md:flex-row items-center justify-between text-[11px] font-mono gap-4 mb-10 px-6 bg-slate-950/80 py-5 rounded-[1.5rem] border border-white/5 shadow-inner">
+                            <span class="text-slate-600 font-bold uppercase tracking-widest">Protocol_Hash_Anchor:</span>
+                            <span class="text-emerald-500/70 truncate flex-grow text-right hover:text-emerald-400 transition-colors cursor-pointer">${post.txHash}</span>
                         </div>
-                        <div class="flex items-center justify-between pt-8 border-t border-white/5">
-                            <div class="flex gap-8"><i data-lucide="heart" class="w-5 h-5 text-slate-700 hover:text-pink-500 cursor-pointer transition-colors"></i><i data-lucide="share-2" class="w-5 h-5 text-slate-700 hover:text-emerald-400 cursor-pointer transition-colors"></i></div>
-                            <div class="flex items-center gap-2.5 text-emerald-400 text-[10px] font-black bg-emerald-500/5 px-4 py-2.5 rounded-2xl border border-emerald-500/10 shadow-sm"><i data-lucide="check-circle" class="w-4 h-4 animate-pulse"></i>${post.attestations} ATTESTATIONS</div>
+                        <div class="flex items-center justify-between pt-12 border-t border-white/5">
+                            <div class="flex gap-10">
+                                <button class="flex items-center gap-2 group/stat hover:text-emerald-400 transition-all"><i data-lucide="heart" class="w-7 h-7 text-slate-700 group-hover/stat:text-pink-500 transition-all"></i> <span class="font-black">ON-CHAIN</span></button>
+                            </div>
+                            <div class="flex items-center gap-4 text-emerald-400 text-[12px] font-black bg-emerald-500/5 px-6 py-4 rounded-[1.5rem] border border-emerald-500/20 shadow-xl">
+                                <i data-lucide="shield-check" class="w-6 h-6 animate-pulse text-emerald-500"></i>
+                                TRANSMISSION_VERIFIED
+                            </div>
                         </div>
                     </div>
-                    <button class="w-full py-6 bg-white/[0.03] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-emerald-500 hover:text-slate-950 transition-all flex items-center justify-center gap-3 border-t border-emerald-500/10 group-hover:bg-emerald-500 group-hover:text-slate-950" onclick="copyText('${post.title}\\n\\n${post.content}\\n\\nTX: ${post.txHash}', 'Broadcast Payload')">COPY_TRANSMISSION <i data-lucide="copy" class="w-4 h-4"></i></button>
                 `;
                 postsContainer.appendChild(card);
             });
@@ -428,92 +467,114 @@
         }
 
         function renderWeeks() {
-            const uniqueWeeks = [...new Set(posts.map(p => p.week))].sort((a, b) => b - a);
-            if (!uniqueWeeks.includes(12)) uniqueWeeks.push(12);
             weekList.innerHTML = '';
-            uniqueWeeks.forEach(w => {
+            const current = getCurrentWeek();
+            for (let i = current; i >= 1; i--) {
                 const btn = document.createElement('button');
-                btn.className = `w-full px-6 py-6 rounded-[2rem] border transition-all flex items-center justify-between group ${activeWeek == w ? 'bg-emerald-500/10 border-emerald-500/50 text-white shadow-[0_0_25px_rgba(16,185,129,0.08)] scale-[1.02]' : 'border-white/5 text-slate-600 hover:border-emerald-500/20 hover:bg-emerald-500/5'}`;
-                btn.innerHTML = `<div class="text-left"><p class="text-[8px] font-black uppercase tracking-[0.3em] opacity-40">Dev_Cycle</p><p class="font-black text-xl tracking-tighter uppercase italic">Week_${w}</p></div>${activeWeek == w ? '<div class="w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_15px_#10b981] animate-pulse"></div>' : '<i data-lucide="arrow-right" class="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-emerald-400/50"></i>'}`;
-                btn.onclick = () => { activeWeek = w; activeWeekDisplay.innerText = `Logs_${w}`; renderWeeks(); renderPosts(); };
+                btn.className = `w-full px-8 py-10 rounded-[3rem] border transition-all flex items-center justify-between group ${activeWeek == i ? 'bg-emerald-500/10 border-emerald-500/50 text-white shadow-[0_0_30px_rgba(16,185,129,0.1)] scale-[1.05]' : 'border-white/5 text-slate-600 hover:border-emerald-500/30 hover:bg-emerald-500/5'}`;
+                btn.innerHTML = `
+                    <div class="text-left">
+                        <p class="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 mb-1">Cycle_Entry</p>
+                        <p class="font-black text-3xl tracking-tighter uppercase italic">Cycle_${i.toString().padStart(2, '0')}</p>
+                    </div>
+                    ${activeWeek == i ? '<div class="w-4 h-4 bg-emerald-400 rounded-full shadow-[0_0_20px_#10b981] animate-pulse"></div>' : '<i data-lucide="arrow-right" class="w-8 h-8 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all text-emerald-400/40"></i>'}
+                `;
+                btn.onclick = () => { 
+                    activeWeek = i; 
+                    activeWeekDisplay.innerText = i.toString().padStart(2, '0');
+                    renderWeeks(); 
+                    renderPosts(); 
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
                 weekList.appendChild(btn);
-            });
+            }
             lucide.createIcons();
         }
 
-        // --- Logic: Đăng bài không cần Contract trung gian ---
-        // Chúng ta sẽ gửi giao dịch trực tiếp tới Orderbook Contract (0xC10B)
-        // Dữ liệu bài viết sẽ được mã hóa và đính kèm vào trường 'data' của giao dịch.
+        // --- SUBMISSION ---
         postForm.onsubmit = async (e) => {
             e.preventDefault();
-            const provider = getProvider();
-            if (!account || !provider) { showToast('Connect Vault First', 'error'); return; }
+            if (!account) { showToast('Authentication Vault Required', 'error'); return; }
 
             try {
                 btnBroadcast.disabled = true;
-                btnBroadcast.innerHTML = '<div class="loading-spinner"></div> BROADCASTING...';
+                btnBroadcast.innerHTML = '<div class="loading-spinner"></div> ANCHORING...';
                 
-                const ethersProvider = new ethers.BrowserProvider(provider);
-                const signer = await ethersProvider.getSigner();
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
 
-                // Tạo nội dung Metadata đơn giản từ Form
                 const title = document.getElementById('post-title').value;
-                const content = document.getElementById('post-content').value;
+                const content = editor.innerHTML;
                 const week = document.getElementById('post-week').value;
                 const category = document.getElementById('post-category').value;
                 
-                const metadata = JSON.stringify({ title, content, week, category, timestamp: Date.now() });
-                const hexData = ethers.hexlify(ethers.toUtf8Bytes(metadata));
+                const payload = JSON.stringify({ t: title, c: content, w: week, cat: category, b: uploadedBlobs, ts: Date.now() });
+                const hexData = ethers.hexlify(ethers.toUtf8Bytes(payload));
 
-                showToast('Requesting Signature for Data Anchor...');
-
-                // Gửi giao dịch trực tiếp tới Orderbook Contract
-                // Đây là cách "ẩn" bài viết thông qua một giao dịch giao thức hợp lệ
-                const tx = await signer.sendTransaction({
-                    to: ORDERBOOK_ADDR,
-                    data: hexData,
-                    value: 0
-                });
-
+                showToast('Broadcasting to Pod Orderbook (0xC10B)...');
+                const tx = await signer.sendTransaction({ to: ORDERBOOK_ADDR, data: hexData, value: 0 });
+                
                 showToast('Awaiting 1-RTT Attestation...');
                 const receipt = await tx.wait();
                 
-                showToast('Transmission Finalized On-chain!', 'success');
+                showToast('Broadcast Success! Synchronizing Ledger_', 'success');
                 
-                // Thêm vào UI cục bộ
-                posts.unshift({
-                    id: Date.now(),
-                    week: parseInt(week),
+                const newPost = {
+                    id: Date.now(), week: parseInt(week),
                     date: new Date().toLocaleDateString('vi-VN'),
-                    title: title,
-                    content: content,
-                    author: `${account.slice(0, 8)}...`,
+                    title, content, author: `${account.slice(0, 8)}...`,
                     category: category.toUpperCase(),
                     txHash: receipt.hash,
-                    attestations: 22
-                });
+                    blobs: [...uploadedBlobs]
+                };
                 
-                renderPosts();
+                posts.unshift(newPost);
+                
+                // Persist to localStorage
+                localStorage.setItem('pod_v1_journal', JSON.stringify(posts));
+                
+                // Reset Form
+                uploadedBlobs = [];
+                mediaPreview.innerHTML = '';
+                mediaPreview.classList.add('hidden');
+                editor.innerHTML = '';
                 postForm.reset();
                 adminPanel.classList.add('hidden');
+                activeWeek = parseInt(week);
+                renderWeeks();
+                renderPosts();
                 
             } catch (err) { 
                 console.error(err); 
-                showToast(err.reason || 'Transaction Failure', 'error'); 
+                showToast('Protocol Anchor Failure', 'error'); 
             } 
             finally { 
                 btnBroadcast.disabled = false; 
-                btnBroadcast.innerHTML = '<i data-lucide="send" class="w-5 h-5"></i> Post_Onchain'; 
+                btnBroadcast.innerHTML = '<i data-lucide="send" class="w-6 h-6"></i> Post_Onchain'; 
             }
         };
 
+        // --- INIT ---
         btnConnect.onclick = connectWallet;
-        toggleAdmin.onclick = () => { adminPanel.classList.toggle('hidden'); if(!adminPanel.classList.contains('hidden')) { window.scrollTo({ top: 0, behavior: 'smooth' }); } };
-        window.onload = () => { lucide.createIcons(); renderWeeks(); renderPosts(); };
-        const provider = getProvider();
-        if (provider) {
-            provider.on('accountsChanged', (accs) => { if (accs.length === 0) location.reload(); else { account = accs[0]; connectWallet(); } });
-            provider.on('chainChanged', () => location.reload());
+        toggleAdmin.onclick = () => { 
+            adminPanel.classList.toggle('hidden'); 
+            const current = getCurrentWeek();
+            document.getElementById('post-week').value = current;
+            document.getElementById('post-week-display').innerText = current.toString().padStart(2, '0');
+            if(!adminPanel.classList.contains('hidden')) window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        };
+        
+        window.onload = () => { 
+            activeWeek = getCurrentWeek();
+            activeWeekDisplay.innerText = activeWeek.toString().padStart(2, '0');
+            renderWeeks(); 
+            renderPosts(); 
+            lucide.createIcons();
+        };
+
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', () => location.reload());
+            window.ethereum.on('chainChanged', () => location.reload());
         }
     </script>
 </body>

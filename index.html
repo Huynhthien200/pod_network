@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pod Social | Blockchain & Walrus Storage</title>
+    <title>Pod Social | Privy Embedded Wallet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.1/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -19,7 +19,7 @@
 
         body {
             background-color: var(--pod-deep);
-            background-image: linear-gradient(rgba(1, 10, 5, 0.8), rgba(1, 10, 5, 0.95)), var(--bg-image);
+            background-image: linear-gradient(rgba(1, 10, 5, 0.85), rgba(1, 10, 5, 0.95)), var(--bg-image);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -45,6 +45,17 @@
         
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 10px; }
+
+        /* Animation cho Privy loading */
+        .privy-loader {
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-top: 2px solid var(--pod-green);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="selection:bg-emerald-500/30 custom-scrollbar">
@@ -52,16 +63,16 @@
     <div id="toast-container" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- Status Header -->
-    <div class="sticky top-0 z-[100] bg-[#010a05]/90 backdrop-blur-md border-b border-white/5 py-2 px-6">
+    <div class="sticky top-0 z-[100] bg-[#010a05]/95 backdrop-blur-md border-b border-white/5 py-2 px-6">
         <div class="flex justify-between items-center max-w-6xl mx-auto">
             <div class="flex items-center gap-4">
-                <span class="text-[10px] font-black text-emerald-400 uppercase tracking-tighter">Pod Network V2</span>
-                <div id="network-status" class="flex items-center gap-2 text-[9px] font-bold text-slate-500">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> RPC CONNECTED
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Pod Social Network</span>
                 </div>
             </div>
-            <div class="text-[9px] font-mono text-slate-500 italic hidden md:block">
-                Storage: Walrus Testnet (Aggregator Active)
+            <div id="sync-indicator" class="text-[9px] font-bold text-slate-500 flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> ĐANG ĐỒNG BỘ CHUỖI...
             </div>
         </div>
     </div>
@@ -71,37 +82,73 @@
             
             <!-- Left Sidebar -->
             <aside class="lg:col-span-3 space-y-6">
-                <div class="flex items-center gap-3 mb-8 cursor-pointer" onclick="location.reload()">
-                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <div class="flex items-center gap-3 mb-8 cursor-pointer group" onclick="location.reload()">
+                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-black shadow-lg group-hover:scale-110 transition-transform">
                         <i data-lucide="zap"></i>
                     </div>
-                    <h1 class="text-2xl font-black text-white italic">Pod<span class="text-emerald-400">Social</span></h1>
+                    <h1 class="text-2xl font-black text-white italic tracking-tighter">Pod<span class="text-emerald-400">Social</span></h1>
                 </div>
 
-                <div id="auth-section" class="space-y-3">
-                    <button id="btn-connect-wallet" onclick="window.connectWallet()" class="w-full btn-primary flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-xs font-black text-slate-950 shadow-xl">
-                        <i data-lucide="wallet" class="w-4 h-4"></i> KẾT NỐI VÍ
-                    </button>
-                    <div id="user-info" class="hidden glass-panel p-5 rounded-3xl border-emerald-500/20 space-y-4 fade-in">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-emerald-400 border border-white/5">
+                <div id="auth-section" class="space-y-4">
+                    <!-- Login Buttons -->
+                    <div id="auth-buttons" class="space-y-2">
+                        <p class="text-[9px] font-black text-slate-500 uppercase px-2 mb-2">Đăng nhập trải nghiệm</p>
+                        
+                        <button onclick="window.connectDiscord()" class="w-full bg-[#5865F2] hover:bg-[#4752c4] flex items-center justify-between px-6 py-4 rounded-2xl text-xs font-black text-white shadow-xl transition-all active:scale-95 group">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="message-square" class="w-4 h-4"></i> DISCORD
+                            </div>
+                            <span class="text-[8px] bg-white/10 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">PRIVY</span>
+                        </button>
+
+                        <div class="flex items-center gap-4 py-2 opacity-30">
+                            <div class="h-px bg-white/20 flex-grow"></div>
+                            <span class="text-[8px] font-bold">HOẶC</span>
+                            <div class="h-px bg-white/20 flex-grow"></div>
+                        </div>
+
+                        <button onclick="window.connectWallet()" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center gap-3 px-6 py-4 rounded-2xl text-xs font-black text-white transition-all">
+                            <i data-lucide="wallet" class="w-4 h-4"></i> METAMASK
+                        </button>
+                    </div>
+
+                    <!-- User Profile Card -->
+                    <div id="user-info" class="hidden glass-panel p-5 rounded-3xl border-emerald-500/20 space-y-5 fade-in">
+                        <div class="flex items-center gap-4">
+                            <div id="avatar-container" class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-emerald-400 border border-white/5 shadow-inner">
                                 <i data-lucide="user"></i>
                             </div>
                             <div class="min-w-0">
-                                <p id="acc-display" class="text-white font-bold text-xs truncate"></p>
-                                <p id="bal-display" class="text-[9px] text-emerald-500 font-bold">0.00 pETH</p>
+                                <p id="acc-display" class="text-white font-black text-sm truncate"></p>
+                                <div class="flex items-center gap-1.5">
+                                    <span id="acc-tag" class="text-[7px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded font-black uppercase">MetaMask</span>
+                                    <p id="bal-display" class="text-[9px] text-slate-400 font-bold">0.00 pETH</p>
+                                </div>
                             </div>
                         </div>
-                        <button onclick="location.reload()" class="w-full py-2 rounded-xl bg-white/5 text-[9px] font-bold text-red-400 uppercase">Đăng xuất</button>
+                        
+                        <div class="space-y-2">
+                            <p class="text-[8px] text-slate-500 font-bold uppercase px-1">Ví của bạn (Privy Embedded)</p>
+                            <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex items-center justify-between">
+                                <code id="acc-full" class="text-[10px] text-emerald-400/80 font-mono truncate mr-2">0x...</code>
+                                <button onclick="window.copyAcc()" class="text-slate-500 hover:text-white transition-colors">
+                                    <i data-lucide="copy" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="location.reload()" class="w-full py-3 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-[9px] font-black text-red-500 uppercase border border-red-500/10 transition-colors">
+                            ĐĂNG XUẤT
+                        </button>
                     </div>
                 </div>
 
-                <nav class="space-y-1">
+                <nav class="pt-4 space-y-1">
                     <button onclick="window.switchView('global')" id="nav-global" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-xs font-black transition-all text-emerald-400 bg-white/5">
-                        <i data-lucide="globe" class="w-4 h-4"></i> TOÀN CẦU
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i> KHÁM PHÁ
                     </button>
                     <button onclick="window.switchView('personal')" id="nav-personal" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-xs font-black transition-all text-slate-500 hover:bg-white/5">
-                        <i data-lucide="user" class="w-4 h-4"></i> CỦA TÔI
+                        <i data-lucide="user-check" class="w-4 h-4"></i> CÁ NHÂN
                     </button>
                 </nav>
             </aside>
@@ -115,13 +162,26 @@
                             <i data-lucide="pen-tool"></i>
                         </div>
                         <div class="flex-grow space-y-4">
-                            <div id="editor" contenteditable="true" class="w-full bg-transparent text-white text-lg focus:outline-none min-h-[60px]" data-placeholder="Bạn muốn chia sẻ gì lên Blockchain?"></div>
-                            <div class="flex items-center justify-between pt-4 border-t border-white/5">
-                                <button onclick="document.getElementById('file-input').click()" class="p-2.5 rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-colors">
-                                    <i data-lucide="image" class="w-5 h-5"></i>
-                                    <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleUpload(this)">
+                            <div id="editor" contenteditable="true" class="w-full bg-transparent text-white text-lg focus:outline-none min-h-[80px] font-medium" data-placeholder="Bạn muốn chia sẻ gì lên Blockchain?"></div>
+                            
+                            <div id="media-preview" class="hidden rounded-2xl overflow-hidden border border-white/10 relative group">
+                                <img id="preview-img" src="" class="w-full h-auto">
+                                <button onclick="window.clearMedia()" class="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
                                 </button>
-                                <button id="btn-post" onclick="window.postToBlockchain()" class="btn-primary px-8 py-2.5 rounded-full text-xs font-black text-slate-950 uppercase">
+                            </div>
+
+                            <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                                <div class="flex gap-2">
+                                    <button onclick="document.getElementById('file-input').click()" class="p-3 rounded-full hover:bg-white/5 text-slate-400 hover:text-emerald-400 transition-all">
+                                        <i data-lucide="image" class="w-5 h-5"></i>
+                                        <input type="file" id="file-input" class="hidden" accept="image/*" onchange="window.handleUpload(this)">
+                                    </button>
+                                    <button onclick="window.formatDoc('bold')" class="p-3 rounded-full hover:bg-white/5 text-slate-400 hover:text-emerald-400 transition-all">
+                                        <i data-lucide="bold" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                                <button id="btn-post" onclick="window.postToBlockchain()" class="btn-primary px-10 py-3 rounded-full text-xs font-black text-slate-950 uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
                                     ĐĂNG BÀI
                                 </button>
                             </div>
@@ -129,38 +189,37 @@
                     </div>
                 </div>
 
-                <!-- Feed Title & Sync -->
-                <div class="flex items-center justify-between px-2">
-                    <h2 class="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2 italic">
-                        <i data-lucide="layers" class="w-4 h-4 text-emerald-500"></i> Dòng thời gian
-                    </h2>
-                    <div id="sync-indicator" class="text-[9px] font-bold text-slate-600 flex items-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> ĐANG QUÉT CHUỖI...
-                    </div>
-                </div>
-
                 <!-- Posts List -->
                 <div id="posts-list" class="space-y-4 pb-20">
-                    <!-- Posts load here -->
+                    <!-- Loading state -->
+                    <div class="py-20 text-center opacity-30">
+                        <div class="privy-loader mx-auto mb-4"></div>
+                        <p class="text-[10px] font-black uppercase tracking-widest">Đang tải dữ liệu chuỗi...</p>
+                    </div>
                 </div>
             </main>
 
             <!-- Right Sidebar -->
             <aside class="lg:col-span-3 space-y-6 hidden lg:block">
-                <div class="glass-panel p-6 rounded-3xl border-white/5">
-                    <h3 class="text-white font-bold text-[10px] uppercase mb-4 tracking-widest text-emerald-400">Thông tin chuỗi</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-[8px] text-slate-500 font-bold uppercase">Hợp đồng Indexer</p>
-                            <p class="text-[10px] font-mono text-slate-300 truncate">0xd7094f9db021c676075d2bfc4188c57bc9bd2afa</p>
+                <div class="glass-panel p-6 rounded-3xl border-white/5 space-y-6">
+                    <div>
+                        <h3 class="text-emerald-400 font-black text-[10px] uppercase mb-4 tracking-[0.2em]">Hệ thống</h3>
+                        <div class="space-y-3">
+                            <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
+                                <p class="text-[8px] text-slate-600 font-bold uppercase mb-1">Mạng lưới</p>
+                                <p class="text-[10px] font-bold text-white">Pod Network V2</p>
+                            </div>
+                            <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
+                                <p class="text-[8px] text-slate-600 font-bold uppercase mb-1">Cổng lưu trữ</p>
+                                <p class="text-[10px] font-bold text-white">Walrus Protocol</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-[8px] text-slate-500 font-bold uppercase">Nguồn lưu trữ</p>
-                            <p class="text-[10px] text-slate-300">Walrus Protocol (Decentralized)</p>
-                        </div>
-                        <div id="onchain-badge" class="hidden py-2 px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[9px] text-emerald-400 font-bold text-center italic">
-                             KẾT NỐI DỮ LIỆU THẬT THÀNH CÔNG
-                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/5">
+                        <p class="text-[11px] text-slate-500 leading-relaxed italic">
+                            <b>Ghi chú:</b> Khi sử dụng Discord, chúng tôi tạo một ví cục bộ an toàn. Hãy đảm bảo bạn có pETH để thực hiện giao dịch.
+                        </p>
                     </div>
                 </div>
             </aside>
@@ -177,26 +236,53 @@
         };
 
         let currentAccount = null;
-        let viewMode = 'global';
+        let isSocialLogin = false;
+        let localWallet = null;
 
-        // --- CORE BLOCKCHAIN LOGIC ---
+        // --- AUTH LOGIC (PRIVY SIMULATION) ---
+
+        window.connectDiscord = () => {
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<div class="privy-loader"></div> <span class="ml-2">Đang khởi tạo ví...</span>`;
+            btn.disabled = true;
+
+            setTimeout(async () => {
+                // Tạo Embedded Wallet (giả lập Privy)
+                const randomEntropy = ethers.hexlify(ethers.randomBytes(32));
+                localWallet = new ethers.Wallet(randomEntropy);
+                currentAccount = localWallet.address;
+                isSocialLogin = true;
+                
+                setupUserUI();
+                document.getElementById('acc-tag').innerText = "Privy Wallet";
+                document.getElementById('acc-tag').className = "text-[7px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded font-black uppercase";
+                document.getElementById('avatar-container').innerHTML = `<i data-lucide="message-square" class="text-indigo-400"></i>`;
+                
+                lucide.createIcons();
+                showToast('Chào mừng! Ví Privy của bạn đã sẵn sàng.', 'success');
+            }, 1500);
+        };
 
         window.connectWallet = async () => {
-            if (!window.ethereum) { showToast('Cần MetaMask!', 'error'); return; }
+            if (!window.ethereum) { showToast('Hãy cài đặt MetaMask!', 'error'); return; }
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 currentAccount = accounts[0];
+                isSocialLogin = false;
                 setupUserUI();
-                showToast('Đã kết nối Blockchain', 'success');
-            } catch (e) { showToast('Lỗi kết nối', 'error'); }
+                showToast('Đã kết nối MetaMask thành công', 'success');
+            } catch (e) { showToast('Lỗi kết nối ví', 'error'); }
         };
 
         async function setupUserUI() {
-            document.getElementById('btn-connect-wallet').classList.add('hidden');
+            document.getElementById('auth-buttons').classList.add('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('composer').classList.remove('hidden');
-            document.getElementById('acc-display').innerText = currentAccount;
+            document.getElementById('acc-display').innerText = currentAccount.slice(0,12) + "...";
+            document.getElementById('acc-full').innerText = currentAccount;
             updateBalance();
+            window.syncData();
         }
 
         async function updateBalance() {
@@ -207,19 +293,20 @@
             } catch (e) {}
         }
 
+        // --- BLOCKCHAIN & WALRUS LOGIC ---
+
         window.syncData = async () => {
             const indicator = document.getElementById('sync-indicator');
-            indicator.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> ĐANG QUÉT CHUỖI...`;
+            indicator.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> ĐANG ĐỒNG BỘ CHUỖI...`;
             lucide.createIcons();
 
             try {
                 const provider = new ethers.JsonRpcProvider(CONFIG.RPC);
                 const latestBlock = await provider.getBlockNumber();
                 
-                // TĂNG PHẠM VI QUÉT LÊN 100,000 BLOCK
                 const logs = await provider.getLogs({
                     address: CONFIG.INDEXER,
-                    fromBlock: Math.max(0, latestBlock - 100000),
+                    fromBlock: Math.max(0, latestBlock - 100000), // Quét 100k block
                     toBlock: 'latest',
                     topics: [CONFIG.TOPIC]
                 });
@@ -229,18 +316,10 @@
                 const posts = await Promise.all(logs.map(async (log) => {
                     try {
                         const parsed = iface.parseLog(log);
-                        const blobId = parsed.args.blobId;
-                        
-                        const response = await fetch(`${CONFIG.WALRUS_AGG}/v1/blobs/${blobId}`);
+                        const response = await fetch(`${CONFIG.WALRUS_AGG}/v1/blobs/${parsed.args.blobId}`);
                         if (!response.ok) return null;
                         const data = await response.json();
-                        
-                        return {
-                            ...data,
-                            author: parsed.args.author,
-                            tx: log.transactionHash,
-                            isReal: true
-                        };
+                        return { ...data, author: parsed.args.author, tx: log.transactionHash };
                     } catch (e) { return null; }
                 }));
 
@@ -248,8 +327,7 @@
 
                 if (validPosts.length > 0) {
                     renderPosts(validPosts);
-                    document.getElementById('onchain-badge').classList.remove('hidden');
-                    indicator.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> TÌM THẤY ${validPosts.length} BÀI ĐĂNG`;
+                    indicator.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> ${validPosts.length} BÀI ĐĂNG TRÊN CHUỖI`;
                 } else {
                     renderMockPosts();
                     indicator.innerHTML = `<span class="text-orange-400">HIỂN THỊ DỮ LIỆU GỢI Ý</span>`;
@@ -258,7 +336,7 @@
             } catch (err) {
                 console.error("Sync Error:", err);
                 renderMockPosts();
-                indicator.innerHTML = `<span class="text-red-400">RPC BUSY - LOAD DATA GỢI Ý</span>`;
+                indicator.innerHTML = `<span class="text-red-400">LỖI ĐỒNG BỘ RPC</span>`;
             }
         };
 
@@ -268,33 +346,36 @@
             
             data.forEach(post => {
                 const card = document.createElement('div');
-                card.className = 'glass-panel p-6 rounded-[2rem] border-white/5 fade-in';
+                card.className = 'glass-panel p-6 rounded-[2.5rem] border-white/5 fade-in hover:border-white/10 transition-colors';
                 
                 let mediaHtml = '';
                 if (post.blobs && post.blobs.length > 0) {
                     const url = post.blobs[0].blobId === 'mock-img' ? post.blobs[0].url : `${CONFIG.WALRUS_AGG}/v1/blobs/${post.blobs[0].blobId}`;
-                    mediaHtml = `<div class="mt-4 rounded-2xl overflow-hidden border border-white/10"><img src="${url}" class="w-full max-h-96 object-cover" onerror="this.src='https://placehold.co/600x400/010a05/10b981?text=Walrus+Syncing...'"></div>`;
+                    mediaHtml = `<div class="mt-4 rounded-2xl overflow-hidden border border-white/5"><img src="${url}" class="w-full max-h-[500px] object-cover" onerror="this.src='https://placehold.co/600x400/010a05/10b981?text=Media+Offline'"></div>`;
                 }
 
                 card.innerHTML = `
                     <div class="flex gap-4">
-                        <div class="w-10 h-10 bg-slate-900 rounded-full flex-shrink-0 flex items-center justify-center text-emerald-400 border border-white/5">
+                        <div class="w-10 h-10 bg-slate-900 rounded-full flex-shrink-0 flex items-center justify-center text-emerald-400 border border-white/5 shadow-inner">
                             <i data-lucide="user"></i>
                         </div>
                         <div class="flex-grow min-w-0">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold text-white truncate">${post.author.slice(0,12)}${post.author.length > 12 ? '...' : ''}</span>
-                                <span class="text-[9px] text-slate-600 font-bold">• ${post.date || 'On-chain'}</span>
+                                <span class="text-xs font-black text-white truncate">${post.author.slice(0,14)}...</span>
+                                <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">• ${post.date || 'Blockchain'}</span>
                             </div>
-                            <div class="text-[14px] text-slate-300 leading-relaxed">${post.content}</div>
+                            <div class="text-[15px] text-slate-300 leading-relaxed font-medium">${post.content}</div>
                             ${mediaHtml}
-                            <div class="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
-                                <div class="flex gap-6">
-                                    <i data-lucide="heart" class="w-4 h-4 text-slate-600 hover:text-emerald-500 cursor-pointer"></i>
-                                    <i data-lucide="message-circle" class="w-4 h-4 text-slate-600 hover:text-emerald-500 cursor-pointer"></i>
-                                    <i data-lucide="share-2" class="w-4 h-4 text-slate-600 hover:text-emerald-500 cursor-pointer"></i>
+                            <div class="flex items-center justify-between mt-5 pt-4 border-t border-white/5">
+                                <div class="flex gap-8">
+                                    <button class="flex items-center gap-2 text-slate-600 hover:text-emerald-400 transition-colors">
+                                        <i data-lucide="heart" class="w-4 h-4"></i>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-slate-600 hover:text-emerald-400 transition-colors">
+                                        <i data-lucide="repeat" class="w-4 h-4"></i>
+                                    </button>
                                 </div>
-                                <span class="text-[8px] font-mono text-slate-700">TX: ${post.tx.slice(0,14)}...</span>
+                                <span class="text-[8px] font-mono text-slate-700 tracking-tighter">TX: ${post.tx.slice(0,20)}...</span>
                             </div>
                         </div>
                     </div>
@@ -304,29 +385,14 @@
             lucide.createIcons();
         }
 
-        // --- BỔ SUNG NHIỀU DỮ LIỆU MẪU HƠN ---
         function renderMockPosts() {
             const mock = [
                 {
-                    author: "Pod_Network_Admin",
-                    content: "Chào mừng bạn quay trở lại! Nếu bạn không thấy các bài đăng cũ, có thể do chúng nằm ngoài phạm vi 100.000 block vừa quét. Hãy thử đăng bài mới để kiểm tra kết nối chuỗi nhé!",
-                    date: "Hôm nay",
+                    author: "Pod_Network_Core",
+                    content: "Hệ thống đang hoạt động. Hiện chưa có bài đăng nào trong 100k block gần nhất. Hãy là người đầu tiên đăng bài bằng ví Privy hoặc MetaMask!",
+                    date: "Thông báo",
                     tx: "0x0000000000000000000000",
                     blobs: [{ blobId: 'mock-img', url: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000&auto=format' }]
-                },
-                {
-                    author: "Walrus_Protocol_Alpha",
-                    content: "Hệ thống lưu trữ phi tập trung Walrus đang hoạt động ổn định. Mọi dữ liệu media của bạn được phân mảnh và lưu trữ an toàn trên các node.",
-                    date: "Vừa xong",
-                    tx: "0x1111111111111111111111",
-                    blobs: []
-                },
-                {
-                    author: "Degen_User_99",
-                    content: "LFG! Pod Social is the future of Web3 Social. No censorship, just pure blockchain magic. 🚀💎",
-                    date: "1 giờ trước",
-                    tx: "0x2222222222222222222222",
-                    blobs: []
                 }
             ];
             renderPosts(mock);
@@ -335,11 +401,11 @@
         window.postToBlockchain = async () => {
             const editor = document.getElementById('editor');
             const content = editor.innerHTML;
-            if (!content.trim() || content === '<br>') return;
+            if (!content.trim() || content === '<br>') { showToast('Hãy nhập nội dung!', 'error'); return; }
 
             const btn = document.getElementById('btn-post');
             btn.disabled = true;
-            btn.innerHTML = 'ĐANG TẢI...';
+            btn.innerHTML = `<div class="privy-loader"></div>`;
 
             try {
                 const metadata = {
@@ -349,6 +415,7 @@
                     blobs: []
                 };
 
+                // 1. Tải lên Walrus
                 const res = await fetch(`${CONFIG.WALRUS_PUB}/v1/blobs?epochs=5`, {
                     method: 'PUT',
                     body: JSON.stringify(metadata)
@@ -356,25 +423,39 @@
                 const resData = await res.json();
                 const blobId = resData.newlyCreated ? resData.newlyCreated.blobObject.blobId : resData.alreadyCertified.blobId;
 
-                const provider = new ethers.BrowserProvider(window.ethereum);
-                const signer = await provider.getSigner();
+                // 2. Ký giao dịch
+                let signer;
+                if (isSocialLogin) {
+                    const provider = new ethers.JsonRpcProvider(CONFIG.RPC);
+                    signer = localWallet.connect(provider);
+                } else {
+                    const provider = new ethers.BrowserProvider(window.ethereum);
+                    signer = await provider.getSigner();
+                }
+
                 const contract = new ethers.Contract(CONFIG.INDEXER, ["function createPost(string blobId, uint256 week) public"], signer);
-                
                 const tx = await contract.createPost(blobId, 0);
-                showToast("Đang gửi giao dịch...");
+                showToast("Đang gửi giao dịch lên chuỗi...");
                 await tx.wait();
                 
-                showToast("Đã neo bài viết vào Blockchain!", "success");
+                showToast("Đăng bài thành công!", "success");
                 editor.innerHTML = '';
                 window.syncData();
+                updateBalance();
             } catch (e) {
                 console.error(e);
-                showToast("Lỗi: Kiểm tra pETH hoặc kết nối!", "error");
+                showToast("Lỗi: Kiểm tra pETH hoặc kết nối mạng!", "error");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = 'ĐĂNG BÀI';
             }
         };
+
+        window.copyAcc = () => {
+            navigator.clipboard.writeText(currentAccount).then(() => showToast('Đã copy địa chỉ ví!'));
+        };
+
+        window.formatDoc = (cmd) => { document.execCommand(cmd, false, null); document.getElementById('editor').focus(); };
 
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');

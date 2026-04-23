@@ -218,7 +218,7 @@
 
                     <div class="pt-4 border-t border-white/5">
                         <p class="text-[11px] text-slate-500 leading-relaxed italic">
-                            <b>Ghi chú:</b> Khi sử dụng Discord, chúng tôi tạo một ví cục bộ an toàn. Hãy đảm bảo bạn có pETH để thực hiện giao dịch.
+                            <b>Ghi chú:</b> Đã cấu hình Privy App ID <code class="text-emerald-300">cmobamqkp00220clbbikzbyl8</code> và Discord Client ID <code class="text-emerald-300">1496762174230757406</code>.
                         </p>
                     </div>
                 </div>
@@ -232,36 +232,79 @@
             INDEXER: '0xd7094f9db021c676075d2bfc4188c57bc9bd2afa',
             WALRUS_PUB: 'https://publisher.walrus-testnet.walrus.space',
             WALRUS_AGG: 'https://aggregator.walrus-testnet.walrus.space',
-            TOPIC: ethers.id("PostCreated(address,string,uint256)")
+            TOPIC: ethers.id("PostCreated(address,string,uint256)"),
+            PRIVY_APP_ID: 'cmobamqkp00220clbbikzbyl8',
+            PRIVY_CLIENT_ID: '1496762174230757406'
         };
 
         let currentAccount = null;
         let isSocialLogin = false;
         let localWallet = null;
+        let privyClient = null;
 
-        // --- AUTH LOGIC (PRIVY SIMULATION) ---
+        // --- AUTH LOGIC (PRIVY) ---
 
-        window.connectDiscord = () => {
-            const btn = event.currentTarget;
+        async function getPrivyClient() {
+            if (privyClient) return privyClient;
+            const privySdk = await import('https://esm.sh/@privy-io/js-sdk-core@latest');
+            const Privy = privySdk.default;
+            privyClient = new Privy({
+                appId: CONFIG.PRIVY_APP_ID,
+                clientId: CONFIG.PRIVY_CLIENT_ID,
+                storage: new privySdk.LocalStorage()
+            });
+            return privyClient;
+        }
+
+        async function attemptDiscordLogin(privy) {
+            if (privy?.auth?.oauth?.loginWithOAuth) {
+                return await privy.auth.oauth.loginWithOAuth('discord');
+            }
+            if (privy?.auth?.oauth?.initOAuth) {
+                return await privy.auth.oauth.initOAuth({ provider: 'discord' });
+            }
+            throw new Error('Privy OAuth API not found');
+        }
+
+        window.connectDiscord = async (event) => {
+            const clickEvent = event || window.event;
+            const btn = clickEvent?.currentTarget || document.querySelector('#auth-buttons button');
             const originalContent = btn.innerHTML;
-            btn.innerHTML = `<div class="privy-loader"></div> <span class="ml-2">Đang khởi tạo ví...</span>`;
+            btn.innerHTML = `<div class="privy-loader"></div> <span class="ml-2">Đang đăng nhập Privy...</span>`;
             btn.disabled = true;
 
-            setTimeout(async () => {
-                // Tạo Embedded Wallet (giả lập Privy)
-                const randomEntropy = ethers.hexlify(ethers.randomBytes(32));
-                localWallet = new ethers.Wallet(randomEntropy);
-                currentAccount = localWallet.address;
+            try {
+                const privy = await getPrivyClient();
+                const session = await attemptDiscordLogin(privy);
+                const user = session?.user || session;
+
+                // Cố gắng lấy embedded wallet từ Privy, fallback ví cục bộ nếu chưa có
+                let walletAddress = null;
+                const embeddedWallet = user?.wallet?.address || user?.embeddedWallet?.address;
+                if (embeddedWallet) {
+                    walletAddress = embeddedWallet;
+                } else {
+                    const randomEntropy = ethers.hexlify(ethers.randomBytes(32));
+                    localWallet = new ethers.Wallet(randomEntropy);
+                    walletAddress = localWallet.address;
+                }
+
+                currentAccount = walletAddress;
                 isSocialLogin = true;
-                
-                setupUserUI();
-                document.getElementById('acc-tag').innerText = "Privy Wallet";
+
+                await setupUserUI();
+                document.getElementById('acc-tag').innerText = "Privy + Discord";
                 document.getElementById('acc-tag').className = "text-[7px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded font-black uppercase";
                 document.getElementById('avatar-container').innerHTML = `<i data-lucide="message-square" class="text-indigo-400"></i>`;
-                
                 lucide.createIcons();
-                showToast('Chào mừng! Ví Privy của bạn đã sẵn sàng.', 'success');
-            }, 1500);
+                showToast('Đăng nhập Discord qua Privy thành công.', 'success');
+            } catch (e) {
+                console.error('Privy OAuth error', e);
+                showToast('Privy chưa sẵn sàng. Kiểm tra App ID/Client ID trong cấu hình.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            }
         };
 
         window.connectWallet = async () => {

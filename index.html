@@ -43,59 +43,44 @@
         }
 
         #editor {
-            min-height: 80px;
+            min-height: 100px;
             outline: none;
-            overflow-y: auto;
         }
         #editor:empty:before { content: attr(data-placeholder); color: #475569; pointer-events: none; }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 10px; }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-            display: flex;
-            width: max-content;
-            animation: marquee 30s linear infinite;
-        }
-        
         .discord-btn {
             background: var(--discord-blurple);
             transition: all 0.3s ease;
         }
-        .discord-btn:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 0 20px rgba(88, 101, 242, 0.4);
-        }
+        .discord-btn:hover { filter: brightness(1.1); box-shadow: 0 0 20px rgba(88, 101, 242, 0.4); }
 
         .modal-overlay {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
         }
         
-        .post-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .loading-ring {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            border-top: 2px solid #10b981;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
-        .post-card:hover {
-            border-color: rgba(16, 185, 129, 0.3);
-            transform: scale(1.01);
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="selection:bg-emerald-500/30">
 
-    <!-- Modal PIN (Security Layer) -->
+    <!-- Modal PIN -->
     <div id="pin-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 modal-overlay">
         <div class="glass-panel w-full max-w-sm p-8 rounded-[2.5rem] border-emerald-500/30 text-center space-y-6">
             <div class="w-16 h-16 bg-emerald-500/10 rounded-full mx-auto flex items-center justify-center text-emerald-400">
                 <i data-lucide="shield-check" class="w-8 h-8"></i>
             </div>
             <div>
-                <h3 id="pin-title" class="text-white font-black text-lg uppercase tracking-widest">Bảo mật ví Pod</h3>
-                <p class="text-[10px] text-slate-500 mt-2">Dùng PIN để mã hóa ví deterministic trên trình duyệt.</p>
+                <h3 id="pin-title" class="text-white font-black text-lg uppercase tracking-widest italic">Xác nhận PIN</h3>
+                <p class="text-[10px] text-slate-500 mt-2 italic">Dùng PIN để mã hóa ví Pod lưu cục bộ của bạn.</p>
             </div>
             <input type="password" id="pin-input" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-center text-xl tracking-[0.5em] text-emerald-400 outline-none focus:border-emerald-500" placeholder="••••">
             <button id="btn-confirm-pin" class="w-full btn-primary py-4 rounded-2xl font-black text-slate-950 uppercase tracking-widest">XÁC NHẬN</button>
@@ -108,14 +93,13 @@
         <div class="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-emerald-600/5 blur-[100px]"></div>
     </div>
 
-    <!-- Top Status Bar -->
+    <!-- Status Bar -->
     <div class="sticky top-0 z-[100] bg-[#010a05]/98 backdrop-blur-md border-b border-white/5 py-1.5 px-6 overflow-hidden">
-        <div class="animate-marquee italic font-bold tracking-widest text-[9px] text-emerald-400/70 uppercase">
-            <span class="px-8">Pod Social Live</span>
-            <span class="px-8">RPC: https://rpc.v2.pod.network</span>
-            <span class="px-8">Identity: Discord OAuth2 Enabled</span>
-            <span class="px-8">Wallet: AES-GCM Encrypted Keys</span>
-            <span class="px-8">Storage: Walrus Center Active</span>
+        <div class="flex items-center gap-12 whitespace-nowrap italic font-bold tracking-widest text-[9px] text-emerald-400/70 uppercase">
+            <span id="rpc-status-badge">RPC Status: Checking...</span>
+            <span>Identity: On-chain Social Indexer Live</span>
+            <span>Network: Pod v2 (Chain 1293)</span>
+            <span>Storage: Walrus Center Active</span>
         </div>
     </div>
 
@@ -124,15 +108,16 @@
             
             <!-- Sidebar Left -->
             <aside class="lg:col-span-3 space-y-6 sticky top-12 self-start">
-                <div class="flex items-center gap-3 mb-10 px-2 group cursor-pointer" onclick="location.reload()">
+                <div class="flex items-center gap-3 mb-10 px-2 group cursor-pointer" onclick="location.href='/'">
                     <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-black shadow-lg transition-transform group-hover:scale-110">
                         <i data-lucide="zap"></i>
                     </div>
                     <h1 class="text-2xl font-black text-white tracking-tighter italic uppercase">Pod<span class="text-emerald-400">Social</span></h1>
                 </div>
 
+                <!-- Navigation Tabs -->
                 <nav class="space-y-1 mb-8">
-                    <button onclick="window.switchView('global')" id="nav-global" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group text-emerald-400 active">
+                    <button onclick="window.switchView('global')" id="nav-global" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group text-emerald-400">
                         <i data-lucide="home" class="w-5 h-5"></i> DÒNG THỜI GIAN
                     </button>
                     <button onclick="window.switchView('personal')" id="nav-personal" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group text-slate-500">
@@ -140,94 +125,81 @@
                     </button>
                 </nav>
 
+                <!-- Auth Area -->
                 <div id="auth-box" class="space-y-3">
                     <button onclick="window.connectWallet()" class="w-full btn-primary flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-xs font-black text-slate-950 transition-all shadow-xl active:scale-95">
-                        <i data-lucide="wallet" class="w-4 h-4"></i> KẾT NỐI VÍ (WEB3)
+                        <i data-lucide="wallet" class="w-4 h-4"></i> KẾT NỐI VÍ
                     </button>
-                    <div class="flex items-center gap-4 py-2">
-                        <div class="h-px bg-white/5 flex-grow"></div>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">Hoặc dùng Discord</span>
-                        <div class="h-px bg-white/5 flex-grow"></div>
-                    </div>
                     <button onclick="window.loginDiscord()" class="w-full discord-btn flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-xs font-black text-white transition-all shadow-xl active:scale-95">
-                        <i data-lucide="message-square" class="w-4 h-4"></i> ĐĂNG NHẬP DISCORD
+                        <i data-lucide="message-square" class="w-4 h-4"></i> DISCORD LOGIN
                     </button>
+                    <p class="text-[9px] text-slate-600 text-center uppercase font-bold italic">Bắt đầu trải nghiệm Web3 thật</p>
                 </div>
 
-                <!-- Account Info -->
+                <!-- Profile Card (Visible on success for BOTH types) -->
                 <div id="account-card" class="hidden glass-panel p-6 rounded-[2.5rem] border-emerald-500/20 shadow-2xl space-y-6 animate-in slide-in-from-left-4 duration-500">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 border-b border-white/5 pb-4">
                         <div id="avatar-box" class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-inner overflow-hidden">
                             <i data-lucide="user"></i>
                         </div>
                         <div class="overflow-hidden">
                             <p id="account-name" class="text-white font-black text-sm truncate">User_Account</p>
-                            <p id="account-type" class="text-[8px] text-slate-500 font-bold uppercase tracking-widest italic">Pod Indexer Identity</p>
+                            <p id="account-type-label" class="text-[8px] text-slate-500 font-bold uppercase tracking-widest italic">Identity Synced</p>
                         </div>
                     </div>
                     <div class="space-y-3">
-                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 group relative">
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 group">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-[8px] font-black text-slate-600 uppercase">Ví nạp pETH (Gas)</span>
+                                <span class="text-[8px] font-black text-slate-600 uppercase">Ví của tôi (pETH)</span>
                                 <button onclick="window.copyAddress()" class="text-[8px] text-emerald-500 font-black hover:text-white transition-colors">COPY</button>
                             </div>
                             <p id="account-address" class="text-[10px] font-mono text-emerald-400/80 truncate italic">0x...</p>
                         </div>
                         <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
-                            <span class="text-[8px] font-black text-slate-600 uppercase">Số dư ví Pod</span>
+                            <span class="text-[8px] font-black text-slate-600 uppercase">Số dư Ledger</span>
                             <span id="account-balance" class="text-white font-black text-xs">0.0000 pETH</span>
                         </div>
                     </div>
-                    <button onclick="window.logout()" class="w-full py-3 rounded-xl border border-red-500/10 text-[9px] font-black text-red-500/60 uppercase hover:bg-red-500/20 transition-all">ĐĂNG XUẤT</button>
+                    <button onclick="window.logout()" class="w-full py-3 rounded-xl border border-red-500/10 text-[9px] font-black text-red-500/60 uppercase hover:bg-red-500/10 transition-all">ĐĂNG XUẤT</button>
                 </div>
             </aside>
 
-            <!-- Main Feed -->
+            <!-- Main Content -->
             <main class="lg:col-span-6 space-y-6">
-                <!-- Composer -->
+                <!-- Social Composer -->
                 <div id="composer" class="hidden glass-panel p-6 rounded-[2.5rem] border-white/5 shadow-2xl mb-8">
                     <div class="flex gap-4">
                         <div class="w-12 h-12 bg-emerald-500/10 rounded-full flex-shrink-0 flex items-center justify-center text-emerald-400"><i data-lucide="pen-tool"></i></div>
                         <div class="flex-grow space-y-4">
-                            <div id="editor" contenteditable="true" class="w-full bg-transparent text-white text-lg leading-relaxed focus:outline-none min-h-[80px]" data-placeholder="Bạn đang nghĩ gì về Giao thức?"></div>
+                            <div id="editor" contenteditable="true" class="w-full bg-transparent text-white text-lg leading-relaxed focus:outline-none min-h-[80px]" data-placeholder="Bạn muốn mỏ neo điều gì hôm nay?"></div>
                             <div id="media-preview" class="hidden grid grid-cols-1 gap-4 bg-black/40 p-4 rounded-3xl border border-white/5"></div>
                             <div class="flex items-center justify-between pt-4 border-t border-white/5">
                                 <div class="flex gap-2">
-                                    <button onclick="document.getElementById('media-upload').click()" class="p-2 rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-colors"><i data-lucide="image" class="w-5 h-5"></i></button>
-                                    <button onclick="window.formatDoc('bold')" class="p-2 rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-colors"><i data-lucide="bold" class="w-5 h-5"></i></button>
+                                    <button onclick="document.getElementById('media-upload').click()" class="p-2.5 rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-colors"><i data-lucide="image" class="w-5 h-5"></i></button>
+                                    <button onclick="window.formatDoc('bold')" class="p-2.5 rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-colors"><i data-lucide="bold" class="w-5 h-5"></i></button>
                                     <input type="file" id="media-upload" class="hidden" accept="image/*,video/*" onchange="window.handleMediaUpload(this)">
                                 </div>
-                                <button id="btn-broadcast" onclick="window.handleOnchainPost(event)" class="btn-primary px-8 py-2.5 rounded-full text-xs font-black text-slate-950 uppercase tracking-widest disabled:opacity-50">ĐĂNG BÀI</button>
+                                <button id="btn-broadcast" onclick="window.handleOnchainPost(event)" class="btn-primary px-10 py-3 rounded-full text-xs font-black text-slate-950 uppercase tracking-widest disabled:opacity-50">ĐĂNG BÀI THẬT</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between px-4">
-                    <h2 id="feed-title" class="text-sm font-black text-white uppercase tracking-[0.3em] flex items-center gap-3 italic">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Bảng tin toàn cầu
-                    </h2>
-                    <div id="sync-status" class="text-[9px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> Loading...</div>
+                <div id="posts-container" class="space-y-4 pb-20">
+                     <div class="py-24 text-center opacity-10 uppercase italic font-black">Syncing Blockchain Data...</div>
                 </div>
-
-                <div id="posts-container" class="space-y-4 pb-20"></div>
             </main>
 
             <!-- Sidebar Right -->
-            <aside class="lg:col-span-3 space-y-6 sticky top-12 self-start hidden lg:block">
-                <div class="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-6">
-                    <h3 class="text-white font-black text-xs uppercase tracking-[0.3em]">Hệ thống</h3>
+            <aside class="lg:col-span-3 hidden lg:block space-y-6 sticky top-12 self-start">
+                 <div class="glass-panel p-8 rounded-[2.5rem] border-white/5">
+                    <h3 class="text-white font-black text-xs uppercase tracking-[0.3em] mb-4 italic">Ledger Status</h3>
                     <div class="space-y-3">
-                        <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5 text-[10px]">
-                            <span class="text-slate-600 font-black uppercase">Mạng Pod v2</span>
-                            <span id="rpc-badge" class="text-red-500 font-black">OFFLINE</span>
+                        <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-[9px] text-slate-600 font-black uppercase">RPC Pod v2</span>
+                            <span id="rpc-badge" class="text-red-500 font-black text-[9px]">OFFLINE</span>
                         </div>
                     </div>
-                </div>
-                
-                <div class="p-6 bg-emerald-500/5 rounded-[2rem] border border-emerald-500/10">
-                    <h4 class="text-emerald-500 font-black text-[10px] uppercase mb-4">Mỏ neo dữ liệu</h4>
-                    <p class="text-[11px] text-slate-500 italic leading-relaxed">Nội dung của bạn được lưu vĩnh viễn trên Walrus và Indexer bởi Pod Smart Contract. Không ai có thể kiểm duyệt bài viết này.</p>
                 </div>
                 <input type="hidden" id="indexer-address" value="0xd7094f9db021c676075d2bfc4188c57bc9bd2afa">
             </aside>
@@ -235,69 +207,48 @@
     </div>
 
     <script>
-        // --- CẤU HÌNH ---
+        // --- CONFIG ---
         const DISCORD_CLIENT_ID = "1496762174230757406"; 
-        const POD_CHAIN_ID = '0x50d'; 
         const POD_NETWORK_RPC = 'https://rpc.v2.pod.network';
         const WALRUS_PUBLISHER = 'https://publisher.walrus-testnet.walrus.space';
         const WALRUS_AGGREGATOR = 'https://aggregator.walrus-testnet.walrus.space';
-        const INDEXER_ABI = ["event PostCreated(address indexed author, string blobId, uint256 week)"];
-        const SALT = "pod_social_v5_deterministic_identity";
+        const SALT = "pod_v6_deterministic_vault_salt";
 
-        let account = null;
-        let isSocialLogin = false; 
-        let currentWallet = null; 
-        let allPosts = [];
-        let uploadedBlobs = [];
-        let balanceTimer = null;
-        let currentView = 'global';
+        let account = null, isSocialLogin = false, currentWallet = null, allPosts = [], uploadedBlobs = [], currentView = 'global', balanceTimer = null;
 
-        // --- SECURITY: SANITIZER ---
-        function sanitizeHTML(html) {
-            const allowedTags = ['b','i','em','strong','p','h1','h2','h3','img','video','br','div','span','blockquote'];
-            const allowedAttrs = ['src', 'controls', 'class', 'width', 'height'];
-            const div = document.createElement('div');
-            div.innerHTML = html;
-            div.querySelectorAll('*').forEach(el => {
-                if (!allowedTags.includes(el.tagName.toLowerCase())) {
-                    el.replaceWith(...el.childNodes);
-                } else {
-                    [...el.attributes].forEach(attr => {
-                        const val = attr.value.trim().toLowerCase();
-                        if (attr.name.toLowerCase().startsWith('on') || val.includes('javascript:') || val.includes('data:')) {
-                            el.removeAttribute(attr.name);
-                        }
-                    });
-                }
+        // --- SECURITY ---
+        function sanitizeHTML(h) {
+            const d = document.createElement('div'); d.innerHTML = h;
+            const tags = ['b','i','em','strong','p','h1','h2','h3','img','video','br','span','blockquote'];
+            d.querySelectorAll('*').forEach(el => {
+                if (!tags.includes(el.tagName.toLowerCase())) el.replaceWith(...el.childNodes);
+                else [...el.attributes].forEach(a => { if (a.name.toLowerCase().startsWith('on') || a.value.includes('javascript:')) el.removeAttribute(a.name); });
             });
-            return div.innerHTML;
+            return d.innerHTML;
         }
 
-        // --- CRYPTO CORE ---
-        async function deriveKey(password) {
-            const enc = new TextEncoder();
-            const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]);
-            return await crypto.subtle.deriveKey({ name: "PBKDF2", salt: enc.encode(SALT), iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+        // --- CRYPTO ---
+        async function deriveKey(p) {
+            const e = new TextEncoder();
+            const km = await crypto.subtle.importKey("raw", e.encode(p), { name: "PBKDF2" }, false, ["deriveKey"]);
+            return await crypto.subtle.deriveKey({ name: "PBKDF2", salt: e.encode(SALT), iterations: 100000, hash: "SHA-256" }, km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
         }
-        async function encryptKey(pk, password) {
-            const key = await deriveKey(password);
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-            const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(pk));
-            return { encrypted: Array.from(new Uint8Array(encrypted)), iv: Array.from(iv) };
+        async function encryptK(pk, p) {
+            const k = await deriveKey(p), iv = crypto.getRandomValues(new Uint8Array(12));
+            const enc = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, k, new TextEncoder().encode(pk));
+            return { encrypted: Array.from(new Uint8Array(enc)), iv: Array.from(iv) };
         }
-        async function decryptKey(encryptedData, password) {
+        async function decryptK(d, p) {
             try {
-                const key = await deriveKey(password);
-                const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(encryptedData.iv) }, key, new Uint8Array(encryptedData.encrypted));
-                return new TextDecoder().decode(decrypted);
+                const k = await deriveKey(p), dec = await crypto.subtle.decrypt({ name: "AES-GCM", iv: new Uint8Array(d.iv) }, k, new Uint8Array(d.encrypted));
+                return new TextDecoder().decode(dec);
             } catch (e) { return null; }
         }
 
         // --- AUTH FLOW ---
         window.loginDiscord = () => {
-            const scope = encodeURIComponent("identify");
             const redirect = encodeURIComponent(window.location.origin + window.location.pathname);
-            window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirect}&response_type=token&scope=${scope}`;
+            window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirect}&response_type=token&scope=identify`;
         };
 
         async function handleDiscordCallback() {
@@ -305,72 +256,88 @@
             const token = params.get("access_token");
             if (!token) return;
             window.history.replaceState(null, null, window.location.pathname);
-            showToast("Xác thực Discord...");
             try {
                 const res = await fetch("https://discord.com/api/users/@me", { headers: { Authorization: `Bearer ${token}` } });
                 const user = await res.json();
                 if (!user.id) return;
-                const pkEntropy = ethers.keccak256(ethers.toUtf8Bytes(user.id + SALT));
-                const vault = localStorage.getItem('pod_vault_v2');
+                
+                const pk = ethers.keccak256(ethers.toUtf8Bytes(user.id + SALT));
+                const vault = localStorage.getItem('pod_vault_secure');
+                
                 if (vault) {
-                    openPinModal(`Chào ${user.username}, hãy mở khóa ví`, async (pin) => {
-                        const pk = await decryptKey(JSON.parse(vault), pin);
-                        if (pk === pkEntropy) { initAccount(pk, user); closePinModal(); }
-                        else showToast("Sai mã PIN!", "error");
+                    openPinModal(`Mở khóa cho ${user.username}`, async (pin) => {
+                        const dpk = await decryptK(JSON.parse(vault), pin);
+                        if (dpk === pk) { initIdentity(pk, user.username, true, user); closePinModal(); } else alert("Sai PIN!");
                     });
                 } else {
-                    openPinModal(`Tạo PIN cho ví Discord mới`, async (pin) => {
-                        if (pin.length < 4) return showToast("PIN tối thiểu 4 số", "error");
-                        const enc = await encryptKey(pkEntropy, pin);
-                        localStorage.setItem('pod_vault_v2', JSON.stringify(enc));
-                        initAccount(pkEntropy, user); closePinModal();
+                    openPinModal("Tạo PIN để bảo mật ví mới", async (pin) => {
+                        if (pin.length < 4) return alert("PIN tối thiểu 4 số");
+                        localStorage.setItem('pod_vault_secure', JSON.stringify(await encryptK(pk, pin)));
+                        initIdentity(pk, user.username, true, user); closePinModal();
                     });
                 }
-            } catch (e) { showToast("Lỗi xác thực Discord", "error"); }
-        }
-
-        function initAccount(pk, user) {
-            currentWallet = new ethers.Wallet(pk, new ethers.JsonRpcProvider(POD_NETWORK_RPC));
-            account = currentWallet.address;
-            isSocialLogin = true;
-            completeAuthUI(user.username);
-            if(user.avatar) document.getElementById('avatar-box').innerHTML = `<img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" class="w-full h-full object-cover">`;
+            } catch (e) { console.error(e); }
         }
 
         window.connectWallet = async () => {
-            if (!window.ethereum) return showToast("Cài MetaMask!", "error");
+            if (!window.ethereum) return alert("Cài MetaMask!");
             try {
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
-                account = await signer.getAddress(); currentWallet = signer; isSocialLogin = false;
-                completeAuthUI("Web3_User");
+                const addr = await signer.getAddress();
+                initIdentity(signer, "Web3_Explorer", false, null, addr);
             } catch (e) {}
         };
 
-        // --- BLOCKCHAIN CORE ---
-        async function refreshBalance() {
-            try {
-                const provider = new ethers.JsonRpcProvider(POD_NETWORK_RPC);
-                const b = await provider.getBalance(account);
-                document.getElementById('account-balance').innerText = `${parseFloat(ethers.formatEther(b)).toFixed(4)} pETH`;
-                document.getElementById('rpc-badge').innerText = "ONLINE";
-                document.getElementById('rpc-badge').className = "text-emerald-400 font-black";
-            } catch (e) { document.getElementById('rpc-badge').innerText = "OFFLINE"; }
+        function initIdentity(walletOrSigner, name, isSocial, discordUser = null, addr = null) {
+            if (isSocial) {
+                currentWallet = new ethers.Wallet(walletOrSigner, new ethers.JsonRpcProvider(POD_NETWORK_RPC));
+                account = currentWallet.address;
+            } else {
+                currentWallet = walletOrSigner;
+                account = addr;
+            }
+            
+            isSocialLogin = isSocial;
+            
+            // UI Updates
+            document.getElementById('auth-box').classList.add('hidden');
+            document.getElementById('account-card').classList.remove('hidden');
+            document.getElementById('composer').classList.remove('hidden');
+            document.getElementById('account-address').innerText = account;
+            document.getElementById('account-name').innerText = name;
+            document.getElementById('account-type-label').innerText = isSocial ? "Discord Identity" : "Metamask Identity";
+
+            if (discordUser && discordUser.avatar) {
+                document.getElementById('avatar-box').innerHTML = `<img src="https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png" class="w-full h-full object-cover">`;
+            } else {
+                document.getElementById('avatar-box').innerHTML = `<i data-lucide="user"></i>`;
+            }
+
+            refreshBal();
+            if(balanceTimer) clearInterval(balanceTimer);
+            balanceTimer = setInterval(refreshBal, 8000);
+            window.syncRealOnchainDiscovery();
+            lucide.createIcons();
         }
 
+        async function refreshBal() {
+            try {
+                const b = await new ethers.JsonRpcProvider(POD_NETWORK_RPC).getBalance(account);
+                document.getElementById('account-balance').innerText = `${parseFloat(ethers.formatEther(b)).toFixed(4)} pETH`;
+                document.getElementById('rpc-badge').innerText = "ONLINE";
+                document.getElementById('rpc-badge').className = "text-emerald-400 font-black text-[9px]";
+            } catch (e) {}
+        }
+
+        // --- DISCOVERY & RENDERING ---
         window.syncRealOnchainDiscovery = async () => {
             try {
                 const provider = new ethers.JsonRpcProvider(POD_NETWORK_RPC);
                 const addr = document.getElementById('indexer-address').value;
                 const bNum = await provider.getBlockNumber();
-                
-                // Batch scanning with rate limiting
-                const startBlock = Math.max(0, bNum - 10000);
-                const filter = { address: addr, fromBlock: startBlock, topics: [ethers.id("PostCreated(address,string,uint256)")] };
-                if (currentView === 'personal' && account) filter.topics.push(ethers.zeroPadValue(account, 32));
-                
-                const logs = await provider.getLogs(filter);
-                const iface = new ethers.Interface(INDEXER_ABI);
+                const logs = await provider.getLogs({ address: addr, fromBlock: bNum - 5000, toBlock: "latest", topics: [ethers.id("PostCreated(address,string,uint256)")] });
+                const iface = new ethers.Interface(["event PostCreated(address indexed author, string blobId, uint256 week)"]);
                 const discovered = await Promise.all(logs.map(async (l) => {
                     try {
                         const p = iface.parseLog(l);
@@ -380,72 +347,35 @@
                     } catch(e) { return null; }
                 }));
                 allPosts = discovered.filter(p => p !== null).sort((a, b) => b.ts - a.ts);
-                window.renderPosts();
-                document.getElementById('sync-status').innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> Synced`;
-                lucide.createIcons();
+                renderPosts();
             } catch (e) {}
         };
 
-        window.handleOnchainPost = async (e) => {
-            e.preventDefault();
-            const content = document.getElementById('editor').innerHTML;
-            if (!content.trim() || content === "<br>") return showToast("Nội dung trống!", "error");
-            const btn = document.getElementById('btn-broadcast');
-            try {
-                btn.disabled = true; btn.innerHTML = 'SENDING...';
-                const m = { content, blobs: uploadedBlobs, ts: Date.now(), date: new Date().toLocaleDateString('vi-VN') };
-                const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) });
-                const d = await r.json();
-                const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
-                const c = new ethers.Contract(document.getElementById('indexer-address').value, ["function createPost(string blobId, uint256 week) public"], currentWallet);
-                const tx = await c.createPost(bId, 0); await tx.wait();
-                showToast('Đã mỏ neo lên chuỗi!', 'success');
-                resetComposer(); window.syncRealOnchainDiscovery();
-            } catch (err) { showToast('Lỗi: Nạp thêm pETH!', 'error'); } 
-            finally { btn.disabled = false; btn.innerHTML = 'ĐĂNG BÀI'; lucide.createIcons(); }
-        };
-
-        // --- MEDIA & UI ---
-        window.handleMediaUpload = async (i) => {
-            const f = i.files[0];
-            if (!f) return;
-            const p = document.getElementById('media-preview');
-            p.classList.remove('hidden'); p.innerHTML = `<div class="aspect-video bg-white/5 rounded-3xl flex items-center justify-center animate-pulse"><i data-lucide="loader" class="animate-spin text-emerald-500"></i></div>`;
-            lucide.createIcons();
-            try {
-                const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', body: f });
-                const d = await r.json();
-                const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
-                uploadedBlobs.push({ blobId, type: f.type.startsWith('image/') ? 'image' : 'video' });
-                p.innerHTML = `<div class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl relative">
-                    ${f.type.startsWith('image/') ? `<img src="${URL.createObjectURL(f)}" class="w-full h-full object-cover">` : `<video src="${URL.createObjectURL(f)}" class="w-full h-full object-cover" muted loop autoplay></video>`}
-                    <div class="absolute bottom-4 right-4 bg-emerald-500 p-2 rounded-2xl text-black"><i data-lucide="check" class="w-4 h-4"></i></div>
-                </div>`;
-                lucide.createIcons();
-            } catch (e) { p.innerHTML = ''; }
-        };
-
-        window.renderPosts = () => {
+        function renderPosts() {
             const c = document.getElementById('posts-container');
-            c.innerHTML = allPosts.length ? '' : `<div class="py-32 text-center opacity-10"><i data-lucide="inbox" class="w-16 h-16 mx-auto mb-4"></i><p class="text-xs font-black uppercase">Sổ cái trống</p></div>`;
-            allPosts.forEach(p => {
+            let data = allPosts;
+            if (currentView === 'personal' && account) {
+                data = allPosts.filter(p => p.author.toLowerCase() === account.toLowerCase());
+            }
+            c.innerHTML = data.length ? '' : `<div class="py-24 text-center opacity-10 font-black uppercase italic">Null Ledger Data</div>`;
+            data.forEach(p => {
                 const card = document.createElement('article'); card.className = 'glass-panel p-6 rounded-[2.5rem] border-white/5 post-card';
                 let mH = '';
                 if (p.blobs) {
                     mH = `<div class="grid grid-cols-1 gap-4 my-4">`;
                     p.blobs.forEach(b => {
                         const u = `${WALRUS_AGGREGATOR}/v1/blobs/${b.blobId}`;
-                        mH += `<div class="rounded-3xl overflow-hidden bg-black border border-white/5">`;
-                        if (b.type === 'image') mH += `<img src="${u}" class="w-full h-auto">`;
-                        else mH += `<video controls src="${u}" class="w-full h-auto"></video>`;
-                        mH += `</div>`;
+                        mH += `<div class="rounded-3xl overflow-hidden bg-black border border-white/5">${b.type==='image'?`<img src="${u}" class="w-full">`:`<video controls src="${u}" class="w-full"></video>`}</div>`;
                     });
                     mH += `</div>`;
                 }
                 card.innerHTML = `<div class="flex gap-4">
                     <div class="w-12 h-12 bg-slate-900 rounded-full flex-shrink-0 flex items-center justify-center text-emerald-400 border border-emerald-500/10 shadow-inner overflow-hidden"><i data-lucide="user"></i></div>
                     <div class="flex-grow min-w-0">
-                        <div class="flex items-center gap-2 mb-1"><span class="text-sm font-black text-white truncate cursor-pointer hover:underline" onclick="navigator.clipboard.writeText('${p.author}')">${p.author.slice(0,14)}...</span><span class="text-[10px] text-slate-600 font-bold">• ${p.date}</span></div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm font-black text-white truncate cursor-pointer hover:underline" onclick="window.copyToClip('${p.author}')">${p.author.slice(0,14)}...</span>
+                            <span class="text-[10px] text-slate-600 font-bold">• ${p.date || 'Live'}</span>
+                        </div>
                         <div class="text-[15px] text-slate-200 leading-relaxed font-sans">${sanitizeHTML(p.content)}</div>
                         ${mH}
                     </div>
@@ -453,33 +383,55 @@
                 c.appendChild(card);
             });
             lucide.createIcons();
+        }
+
+        window.handleOnchainPost = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-broadcast'), content = document.getElementById('editor').innerHTML;
+            if(!content.trim() || content==="<br>") return;
+            try {
+                btn.disabled = true; btn.innerHTML = '<div class="loading-ring mx-auto"></div>';
+                const m = { content, blobs: uploadedBlobs, ts: Date.now(), date: new Date().toLocaleDateString('vi-VN') };
+                const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) });
+                const d = await r.json();
+                const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
+                const tx = await new ethers.Contract(document.getElementById('indexer-address').value, ["function createPost(string blobId, uint256 week) public"], currentWallet).createPost(bId, 0);
+                await tx.wait();
+                document.getElementById('editor').innerHTML = ''; uploadedBlobs = []; document.getElementById('media-preview').innerHTML = ''; window.syncRealOnchainDiscovery();
+            } catch (err) { alert("Cần nạp pETH vào ví để đăng bài!"); } finally { btn.disabled = false; btn.innerHTML = 'ĐĂNG BÀI THẬT'; lucide.createIcons(); }
+        };
+
+        window.handleMediaUpload = async (i) => {
+            const f = i.files[0]; if(!f) return;
+            const p = document.getElementById('media-preview'); p.classList.remove('hidden');
+            try {
+                p.innerHTML = `<div class="py-4 text-center"><div class="loading-ring mx-auto"></div></div>`;
+                const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', body: f });
+                const d = await r.json();
+                const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
+                uploadedBlobs.push({ blobId, type: f.type.startsWith('image/') ? 'image' : 'video' });
+                p.innerHTML = `<div class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl relative">${f.type.startsWith('image/')?`<img src="${URL.createObjectURL(f)}" class="w-full h-full object-cover">`:`<video src="${URL.createObjectURL(f)}" class="w-full h-full object-cover" muted loop autoplay></video>`}<div class="absolute bottom-4 right-4 bg-emerald-500 p-2 rounded-2xl text-black"><i data-lucide="check" class="w-4 h-4"></i></div></div>`;
+                lucide.createIcons();
+            } catch (e) { p.innerHTML = ''; }
         };
 
         window.switchView = (v) => { 
             window.currentView = v; 
-            document.getElementById('nav-global').className = `w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group ${v === 'global' ? 'text-emerald-400 active' : 'text-slate-500'}`;
-            document.getElementById('nav-personal').className = `w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group ${v === 'personal' ? 'text-emerald-400 active' : 'text-slate-500'}`;
-            window.syncRealOnchainDiscovery(); 
+            document.getElementById('nav-global').className = `w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group ${v === 'global' ? 'text-emerald-400' : 'text-slate-500'}`;
+            document.getElementById('nav-personal').className = `w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group ${v === 'personal' ? 'text-emerald-400' : 'text-slate-500'}`;
+            renderPosts(); 
         };
-        window.copyAddress = () => navigator.clipboard.writeText(account).then(() => showToast('Đã copy ví!', 'success'));
-        window.logout = () => { localStorage.removeItem('pod_vault_v2'); location.reload(); };
-        function openPinModal(t, cb) { document.getElementById('pin-title').innerText = t; document.getElementById('pin-modal').classList.remove('hidden'); document.getElementById('btn-confirm-pin').onclick = () => cb(document.getElementById('pin-input').value); }
-        function closePinModal() { document.getElementById('pin-modal').classList.add('hidden'); }
-        function resetComposer() { document.getElementById('editor').innerHTML = ''; document.getElementById('media-preview').innerHTML = ''; document.getElementById('media-preview').classList.add('hidden'); uploadedBlobs = []; }
-        function showToast(m, t='info') {
-            const toast = document.createElement('div');
-            toast.className = `glass-panel px-6 py-4 rounded-2xl flex items-center gap-4 text-[11px] font-black shadow-2xl animate-in slide-in-from-right-8 duration-500 border-emerald-500/20 pointer-events-auto ${t === 'error' ? 'text-red-400' : 'text-emerald-400'}`;
-            toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${m.toUpperCase()}`;
-            document.getElementById('toast-container').appendChild(toast);
-            lucide.createIcons();
-            setTimeout(() => { if(toast) toast.remove(); }, 5000);
-        }
-        window.formatDoc = (cmd, val=null) => { document.execCommand(cmd, false, val); document.getElementById('editor').focus(); };
+        window.copyAddress = () => navigator.clipboard.writeText(account).then(() => alert('Đã copy ví!'));
+        window.copyToClip = (t) => navigator.clipboard.writeText(t).then(() => alert('Đã copy địa chỉ!'));
+        window.logout = () => { localStorage.removeItem('pod_vault_secure'); location.reload(); };
+        window.openPinModal = (t, cb) => { document.getElementById('pin-title').innerText = t; document.getElementById('pin-modal').classList.remove('hidden'); document.getElementById('btn-confirm-pin').onclick = () => cb(document.getElementById('pin-input').value); };
+        window.closePinModal = () => document.getElementById('pin-modal').classList.add('hidden');
+        window.formatDoc = (c, v=null) => { document.execCommand(c, false, v); document.getElementById('editor').focus(); };
 
-        window.onload = () => {
-            lucide.createIcons();
-            if (window.location.hash) handleDiscordCallback();
-            window.syncRealOnchainDiscovery();
+        window.onload = () => { 
+            lucide.createIcons(); 
+            if (window.location.hash) handleDiscordCallback(); 
+            window.syncRealOnchainDiscovery(); 
             setInterval(window.syncRealOnchainDiscovery, 30000);
         };
     </script>

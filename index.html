@@ -262,6 +262,26 @@
                 || null;
         }
 
+        async function loginViaDiscord(privy) {
+            const attempts = [
+                () => (privy.loginWithOAuth ? privy.loginWithOAuth({ provider: 'discord' }) : null),
+                () => (privy.loginWithOAuth ? privy.loginWithOAuth('discord') : null),
+                () => (privy.login ? privy.login({ loginMethods: ['discord'] }) : null),
+                () => (privy.login ? privy.login() : null)
+            ];
+
+            let lastError = null;
+            for (const run of attempts) {
+                try {
+                    const result = await run();
+                    if (result) return result;
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+            throw lastError || new Error('discord_login_not_supported');
+        }
+
         window.connectDiscord = async (event) => {
             const clickEvent = event || window.event;
             const btn = clickEvent?.currentTarget || document.querySelector('#auth-buttons button');
@@ -271,18 +291,16 @@
 
             try {
                 const privy = await getPrivyClient();
-                let result;
-                try {
-                    result = await privy.login({ loginMethods: ['discord'] });
-                } catch (loginMethodError) {
-                    // Fallback cho phiên bản SDK không nhận options
-                    result = await privy.login();
+                if (location.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(location.hostname)) {
+                    throw new Error('origin_not_secure_for_oauth');
                 }
+
+                const result = await loginViaDiscord(privy);
                 const user = result?.user || (privy.getUser ? await privy.getUser() : result);
 
                 let walletAddress = getWalletFromUser(user);
                 if (!walletAddress && privy.createWallet) {
-                    const createdWallet = await privy.createWallet();
+                    const createdWallet = await privy.createWallet({ chainType: 'ethereum' });
                     walletAddress = createdWallet?.address || createdWallet?.wallet?.address || null;
                 }
 
@@ -302,7 +320,15 @@
                 showToast('Đăng nhập Discord qua Privy thành công.', 'success');
             } catch (e) {
                 console.error('Privy OAuth error', e);
-                showToast('Đăng nhập Discord qua Privy thất bại. Kiểm tra Discord provider, Redirect URL và Allowed Origins.', 'error');
+                if (e?.message === 'origin_not_secure_for_oauth') {
+                    showToast('OAuth cần HTTPS (hoặc localhost). Hãy chạy app trên domain hợp lệ.', 'error');
+                } else if ((e?.message || '').toLowerCase().includes('popup')) {
+                    showToast('Trình duyệt đã chặn popup đăng nhập. Hãy cho phép popup và thử lại.', 'error');
+                } else if (e?.message === 'privy_wallet_not_found') {
+                    showToast('Đăng nhập Discord xong nhưng chưa có ví Privy. Hãy bật Embedded Wallets trong Privy Dashboard.', 'error');
+                } else {
+                    showToast(`Đăng nhập Discord/Privy lỗi: ${(e?.message || 'unknown_error').slice(0, 80)}`, 'error');
+                }
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalContent;

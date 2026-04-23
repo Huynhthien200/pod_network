@@ -68,6 +68,11 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+        }
     </style>
 </head>
 <body class="selection:bg-emerald-500/30">
@@ -80,14 +85,14 @@
             </div>
             <div>
                 <h3 id="pin-title" class="text-white font-black text-lg uppercase tracking-widest italic">Xác nhận PIN</h3>
-                <p class="text-[10px] text-slate-500 mt-2 italic">Dùng PIN để mã hóa ví Pod lưu cục bộ của bạn.</p>
+                <p class="text-[10px] text-slate-500 mt-2 italic">PIN dùng để mã hóa khóa riêng tư lưu cục bộ của bạn.</p>
             </div>
             <input type="password" id="pin-input" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-center text-xl tracking-[0.5em] text-emerald-400 outline-none focus:border-emerald-500" placeholder="••••">
-            <button id="btn-confirm-pin" class="w-full btn-primary py-4 rounded-2xl font-black text-slate-950 uppercase tracking-widest">XÁC NHẬN</button>
+            <button id="btn-confirm-pin" class="w-full btn-primary py-4 rounded-2xl font-black text-slate-950 uppercase tracking-widest active:scale-95">XÁC NHẬN</button>
         </div>
     </div>
 
-    <!-- Background -->
+    <!-- Background Decoration -->
     <div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
         <div class="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] rounded-full bg-emerald-500/5 blur-[100px]"></div>
         <div class="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-emerald-600/5 blur-[100px]"></div>
@@ -97,9 +102,9 @@
     <div class="sticky top-0 z-[100] bg-[#010a05]/98 backdrop-blur-md border-b border-white/5 py-1.5 px-6 overflow-hidden">
         <div class="flex items-center gap-12 whitespace-nowrap italic font-bold tracking-widest text-[9px] text-emerald-400/70 uppercase">
             <span id="rpc-status-badge">RPC Status: Checking...</span>
-            <span>Identity: On-chain Social Indexer Live</span>
+            <span>Identity: Deterministic Vault Activated</span>
             <span>Network: Pod v2 (Chain 1293)</span>
-            <span>Storage: Walrus Center Active</span>
+            <span>Storage: Walrus Decentralized Blobs</span>
         </div>
     </div>
 
@@ -115,7 +120,6 @@
                     <h1 class="text-2xl font-black text-white tracking-tighter italic uppercase">Pod<span class="text-emerald-400">Social</span></h1>
                 </div>
 
-                <!-- Navigation Tabs -->
                 <nav class="space-y-1 mb-8">
                     <button onclick="window.switchView('global')" id="nav-global" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all hover:bg-white/5 group text-emerald-400">
                         <i data-lucide="home" class="w-5 h-5"></i> DÒNG THỜI GIAN
@@ -125,7 +129,6 @@
                     </button>
                 </nav>
 
-                <!-- Auth Area -->
                 <div id="auth-box" class="space-y-3">
                     <button onclick="window.connectWallet()" class="w-full btn-primary flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-xs font-black text-slate-950 transition-all shadow-xl active:scale-95">
                         <i data-lucide="wallet" class="w-4 h-4"></i> KẾT NỐI VÍ
@@ -133,10 +136,9 @@
                     <button onclick="window.loginDiscord()" class="w-full discord-btn flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-xs font-black text-white transition-all shadow-xl active:scale-95">
                         <i data-lucide="message-square" class="w-4 h-4"></i> DISCORD LOGIN
                     </button>
-                    <p class="text-[9px] text-slate-600 text-center uppercase font-bold italic">Bắt đầu trải nghiệm Web3 thật</p>
                 </div>
 
-                <!-- Profile Card (Visible on success for BOTH types) -->
+                <!-- Account Card -->
                 <div id="account-card" class="hidden glass-panel p-6 rounded-[2.5rem] border-emerald-500/20 shadow-2xl space-y-6 animate-in slide-in-from-left-4 duration-500">
                     <div class="flex items-center gap-4 border-b border-white/5 pb-4">
                         <div id="avatar-box" class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-inner overflow-hidden">
@@ -147,10 +149,20 @@
                             <p id="account-type-label" class="text-[8px] text-slate-500 font-bold uppercase tracking-widest italic">Identity Synced</p>
                         </div>
                     </div>
+
+                    <!-- Deterministic Wallet Warning -->
+                    <div id="discord-warning" class="hidden warning-box p-3 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2 text-amber-500">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                            <span class="text-[9px] font-black uppercase">Cảnh báo ví Discord</span>
+                        </div>
+                        <p class="text-[8px] text-slate-400 italic leading-tight">Đây là ví gắn liền với ID Discord. Mất mã PIN hoặc tài khoản Discord sẽ mất ví vĩnh viễn. Không có Seed Phrase để phục hồi.</p>
+                    </div>
+
                     <div class="space-y-3">
                         <div class="bg-black/40 p-4 rounded-2xl border border-white/5 group">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-[8px] font-black text-slate-600 uppercase">Ví của tôi (pETH)</span>
+                                <span class="text-[8px] font-black text-slate-600 uppercase">Địa chỉ nạp (pETH)</span>
                                 <button onclick="window.copyAddress()" class="text-[8px] text-emerald-500 font-black hover:text-white transition-colors">COPY</button>
                             </div>
                             <p id="account-address" class="text-[10px] font-mono text-emerald-400/80 truncate italic">0x...</p>
@@ -164,9 +176,9 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
+            <!-- Main Feed -->
             <main class="lg:col-span-6 space-y-6">
-                <!-- Social Composer -->
+                <!-- Composer -->
                 <div id="composer" class="hidden glass-panel p-6 rounded-[2.5rem] border-white/5 shadow-2xl mb-8">
                     <div class="flex gap-4">
                         <div class="w-12 h-12 bg-emerald-500/10 rounded-full flex-shrink-0 flex items-center justify-center text-emerald-400"><i data-lucide="pen-tool"></i></div>
@@ -185,19 +197,28 @@
                     </div>
                 </div>
 
-                <div id="posts-container" class="space-y-4 pb-20">
-                     <div class="py-24 text-center opacity-10 uppercase italic font-black">Syncing Blockchain Data...</div>
+                <div class="flex items-center justify-between px-4">
+                    <h2 id="feed-title" class="text-sm font-black text-white uppercase tracking-[0.3em] flex items-center gap-3 italic">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Bảng tin Blockchain
+                    </h2>
+                    <div id="sync-status" class="text-[9px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> Syncing...</div>
                 </div>
+
+                <div id="posts-container" class="space-y-4 pb-20"></div>
             </main>
 
             <!-- Sidebar Right -->
             <aside class="lg:col-span-3 hidden lg:block space-y-6 sticky top-12 self-start">
                  <div class="glass-panel p-8 rounded-[2.5rem] border-white/5">
-                    <h3 class="text-white font-black text-xs uppercase tracking-[0.3em] mb-4 italic">Ledger Status</h3>
+                    <h3 class="text-white font-black text-xs uppercase tracking-[0.3em] mb-4 italic">Ledger Info</h3>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
-                            <span class="text-[9px] text-slate-600 font-black uppercase">RPC Pod v2</span>
+                            <span class="text-[9px] text-slate-600 font-black uppercase">RPC Sync</span>
                             <span id="rpc-badge" class="text-red-500 font-black text-[9px]">OFFLINE</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <span class="text-[9px] text-slate-600 font-black uppercase">Contract</span>
+                            <span class="text-emerald-400 font-black text-[8px] italic truncate ml-4">...9bd2afa</span>
                         </div>
                     </div>
                 </div>
@@ -207,27 +228,29 @@
     </div>
 
     <script>
-        // --- CONFIG ---
+        // --- CONFIG & CONSTANTS ---
         const DISCORD_CLIENT_ID = "1496762174230757406"; 
         const POD_NETWORK_RPC = 'https://rpc.v2.pod.network';
         const WALRUS_PUBLISHER = 'https://publisher.walrus-testnet.walrus.space';
         const WALRUS_AGGREGATOR = 'https://aggregator.walrus-testnet.walrus.space';
-        const SALT = "pod_v6_deterministic_vault_salt";
+        const SALT = "pod_v6_deterministic_identity_salt_secure";
 
         let account = null, isSocialLogin = false, currentWallet = null, allPosts = [], uploadedBlobs = [], currentView = 'global', balanceTimer = null;
 
-        // --- SECURITY ---
+        // --- SECURITY: SANITIZER ---
         function sanitizeHTML(h) {
             const d = document.createElement('div'); d.innerHTML = h;
             const tags = ['b','i','em','strong','p','h1','h2','h3','img','video','br','span','blockquote'];
             d.querySelectorAll('*').forEach(el => {
                 if (!tags.includes(el.tagName.toLowerCase())) el.replaceWith(...el.childNodes);
-                else [...el.attributes].forEach(a => { if (a.name.toLowerCase().startsWith('on') || a.value.includes('javascript:')) el.removeAttribute(a.name); });
+                else [...el.attributes].forEach(a => { 
+                    if (a.name.toLowerCase().startsWith('on') || a.value.includes('javascript:')) el.removeAttribute(a.name); 
+                });
             });
             return d.innerHTML;
         }
 
-        // --- CRYPTO ---
+        // --- CRYPTO: DETERMINISTIC VAULT ---
         async function deriveKey(p) {
             const e = new TextEncoder();
             const km = await crypto.subtle.importKey("raw", e.encode(p), { name: "PBKDF2" }, false, ["deriveKey"]);
@@ -245,7 +268,7 @@
             } catch (e) { return null; }
         }
 
-        // --- AUTH FLOW ---
+        // --- DISCORD OAUTH2 ---
         window.loginDiscord = () => {
             const redirect = encodeURIComponent(window.location.origin + window.location.pathname);
             window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirect}&response_type=token&scope=identify`;
@@ -261,19 +284,22 @@
                 const user = await res.json();
                 if (!user.id) return;
                 
-                const pk = ethers.keccak256(ethers.toUtf8Bytes(user.id + SALT));
+                // FIX: Tạo ví từ seed deterministic thông qua ethers
+                const seed = ethers.id(user.id + SALT);
+                const tempWallet = new ethers.Wallet(seed);
+                const pkEntropy = tempWallet.privateKey;
+
                 const vault = localStorage.getItem('pod_vault_secure');
-                
                 if (vault) {
                     openPinModal(`Mở khóa cho ${user.username}`, async (pin) => {
                         const dpk = await decryptK(JSON.parse(vault), pin);
-                        if (dpk === pk) { initIdentity(pk, user.username, true, user); closePinModal(); } else alert("Sai PIN!");
+                        if (dpk === pkEntropy) { initIdentity(pkEntropy, user.username, true, user); closePinModal(); } else alert("Sai PIN!");
                     });
                 } else {
                     openPinModal("Tạo PIN để bảo mật ví mới", async (pin) => {
                         if (pin.length < 4) return alert("PIN tối thiểu 4 số");
-                        localStorage.setItem('pod_vault_secure', JSON.stringify(await encryptK(pk, pin)));
-                        initIdentity(pk, user.username, true, user); closePinModal();
+                        localStorage.setItem('pod_vault_secure', JSON.stringify(await encryptK(pkEntropy, pin)));
+                        initIdentity(pkEntropy, user.username, true, user); closePinModal();
                     });
                 }
             } catch (e) { console.error(e); }
@@ -285,7 +311,7 @@
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
                 const addr = await signer.getAddress();
-                initIdentity(signer, "Web3_Explorer", false, null, addr);
+                initIdentity(signer, "Web3_User", false, null, addr);
             } catch (e) {}
         };
 
@@ -293,14 +319,14 @@
             if (isSocial) {
                 currentWallet = new ethers.Wallet(walletOrSigner, new ethers.JsonRpcProvider(POD_NETWORK_RPC));
                 account = currentWallet.address;
+                document.getElementById('discord-warning').classList.remove('hidden');
             } else {
                 currentWallet = walletOrSigner;
                 account = addr;
+                document.getElementById('discord-warning').classList.add('hidden');
             }
             
             isSocialLogin = isSocial;
-            
-            // UI Updates
             document.getElementById('auth-box').classList.add('hidden');
             document.getElementById('account-card').classList.remove('hidden');
             document.getElementById('composer').classList.remove('hidden');
@@ -323,14 +349,24 @@
 
         async function refreshBal() {
             try {
-                const b = await new ethers.JsonRpcProvider(POD_NETWORK_RPC).getBalance(account);
+                const provider = new ethers.JsonRpcProvider(POD_NETWORK_RPC);
+                const b = await provider.getBalance(account);
                 document.getElementById('account-balance').innerText = `${parseFloat(ethers.formatEther(b)).toFixed(4)} pETH`;
+                
+                // FIX: Update UI status badges
                 document.getElementById('rpc-badge').innerText = "ONLINE";
                 document.getElementById('rpc-badge').className = "text-emerald-400 font-black text-[9px]";
-            } catch (e) {}
+                document.getElementById('rpc-status-badge').innerText = "RPC Status: ONLINE";
+                document.getElementById('rpc-status-badge').className = "text-emerald-400";
+            } catch (e) {
+                document.getElementById('rpc-badge').innerText = "ERROR";
+                document.getElementById('rpc-badge').className = "text-red-500 font-black text-[9px]";
+                document.getElementById('rpc-status-badge').innerText = "RPC Status: ERROR";
+                document.getElementById('rpc-status-badge').className = "text-red-500";
+            }
         }
 
-        // --- DISCOVERY & RENDERING ---
+        // --- DISCOVERY ---
         window.syncRealOnchainDiscovery = async () => {
             try {
                 const provider = new ethers.JsonRpcProvider(POD_NETWORK_RPC);
@@ -359,7 +395,7 @@
             }
             c.innerHTML = data.length ? '' : `<div class="py-24 text-center opacity-10 font-black uppercase italic">Null Ledger Data</div>`;
             data.forEach(p => {
-                const card = document.createElement('article'); card.className = 'glass-panel p-6 rounded-[2.5rem] border-white/5 post-card';
+                const card = document.createElement('article'); card.className = 'glass-panel p-6 rounded-[2.5rem] border-white/5 post-card animate-in fade-in slide-in-from-bottom-2 duration-500';
                 let mH = '';
                 if (p.blobs) {
                     mH = `<div class="grid grid-cols-1 gap-4 my-4">`;
@@ -385,6 +421,7 @@
             lucide.createIcons();
         }
 
+        // --- POSTING & MEDIA ---
         window.handleOnchainPost = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-broadcast'), content = document.getElementById('editor').innerHTML;
@@ -393,12 +430,16 @@
                 btn.disabled = true; btn.innerHTML = '<div class="loading-ring mx-auto"></div>';
                 const m = { content, blobs: uploadedBlobs, ts: Date.now(), date: new Date().toLocaleDateString('vi-VN') };
                 const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) });
+                if(!r.ok) throw new Error("Walrus Error");
                 const d = await r.json();
                 const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
+                
                 const tx = await new ethers.Contract(document.getElementById('indexer-address').value, ["function createPost(string blobId, uint256 week) public"], currentWallet).createPost(bId, 0);
                 await tx.wait();
+                
                 document.getElementById('editor').innerHTML = ''; uploadedBlobs = []; document.getElementById('media-preview').innerHTML = ''; window.syncRealOnchainDiscovery();
-            } catch (err) { alert("Cần nạp pETH vào ví để đăng bài!"); } finally { btn.disabled = false; btn.innerHTML = 'ĐĂNG BÀI THẬT'; lucide.createIcons(); }
+            } catch (err) { alert("Giao dịch lỗi: Hãy kiểm tra số dư pETH của bạn!"); } 
+            finally { btn.disabled = false; btn.innerHTML = 'ĐĂNG BÀI THẬT'; lucide.createIcons(); }
         };
 
         window.handleMediaUpload = async (i) => {
@@ -407,9 +448,12 @@
             try {
                 p.innerHTML = `<div class="py-4 text-center"><div class="loading-ring mx-auto"></div></div>`;
                 const r = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=5`, { method: 'PUT', body: f });
+                if(!r.ok) throw new Error();
                 const d = await r.json();
+                // FIX: Sử dụng đúng biến bId từ d
                 const bId = d.newlyCreated ? d.newlyCreated.blobObject.blobId : d.alreadyCertified.blobId;
-                uploadedBlobs.push({ blobId, type: f.type.startsWith('image/') ? 'image' : 'video' });
+                uploadedBlobs.push({ blobId: bId, type: f.type.startsWith('image/') ? 'image' : 'video' });
+                
                 p.innerHTML = `<div class="aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl relative">${f.type.startsWith('image/')?`<img src="${URL.createObjectURL(f)}" class="w-full h-full object-cover">`:`<video src="${URL.createObjectURL(f)}" class="w-full h-full object-cover" muted loop autoplay></video>`}<div class="absolute bottom-4 right-4 bg-emerald-500 p-2 rounded-2xl text-black"><i data-lucide="check" class="w-4 h-4"></i></div></div>`;
                 lucide.createIcons();
             } catch (e) { p.innerHTML = ''; }
